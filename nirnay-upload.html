@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nirnay — Upload & Integrate Data</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink:          #0D1520;
+  --ink-2:        #1A2740;
+  --ink-3:        #2C3E5A;
+  --saffron:      #E05C1A;
+  --saffron-2:    #F2834A;
+  --saffron-pale: #FDF0E8;
+  --amber:        #D4880E;
+  --amber-pale:   #FDF6E3;
+  --red:          #C0392B;
+  --red-pale:     #FDECEB;
+  --green:        #0D7A4E;
+  --green-pale:   #E3F5EE;
+  --blue:         #2563EB;
+  --blue-pale:    #EEF3FF;
+  --slate:        #6B7A99;
+  --slate-2:      #9AA5BE;
+  --mist:         #F5F6FA;
+  --mist-2:       #ECEEF5;
+  --white:        #FFFFFF;
+  --border:       rgba(13,21,32,0.07);
+  --border-2:     rgba(13,21,32,0.13);
+  --sidebar-w:    220px;
+}
+
+html, body { height: 100%; overflow: hidden; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--mist);
+  color: var(--ink);
+  display: flex;
+}
+
+/* ── SIDEBAR (same as dashboard) ── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--ink);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  height: 100vh;
+  position: fixed;
+  left: 0; top: 0;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.sidebar::before {
+  content: '';
+  position: absolute;
+  bottom: -60px; right: -60px;
+  width: 240px; height: 240px;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='120' cy='120' r='115' stroke='white' stroke-width='0.6' fill='none'/%3E%3Ccircle cx='120' cy='120' r='85' stroke='white' stroke-width='0.4' fill='none'/%3E%3Ccircle cx='120' cy='120' r='55' stroke='white' stroke-width='0.4' fill='none'/%3E%3Ccircle cx='120' cy='120' r='25' stroke='white' stroke-width='0.5' fill='none'/%3E%3Cg stroke='white' stroke-width='0.4'%3E%3Cline x1='120' y1='5' x2='120' y2='235'/%3E%3Cline x1='5' y1='120' x2='235' y2='120'/%3E%3Cline x1='120' y1='5' x2='120' y2='235' transform='rotate(45 120 120)'/%3E%3Cline x1='120' y1='5' x2='120' y2='235' transform='rotate(22.5 120 120)'/%3E%3Cline x1='120' y1='5' x2='120' y2='235' transform='rotate(67.5 120 120)'/%3E%3Cline x1='120' y1='5' x2='120' y2='235' transform='rotate(112.5 120 120)'/%3E%3Cline x1='120' y1='5' x2='120' y2='235' transform='rotate(135 120 120)'/%3E%3Cline x1='120' y1='5' x2='120' y2='235' transform='rotate(157.5 120 120)'/%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+.sidebar-logo {
+  padding: 1.25rem 1.25rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  margin-bottom: 0.5rem;
+}
+
+.logo-text { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: white; }
+.logo-text span { color: var(--saffron-2); }
+
+.sidebar-section-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 1.2px;
+  text-transform: uppercase; color: rgba(255,255,255,0.28);
+  padding: 0.75rem 1.25rem 0.4rem;
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0.6rem 1.25rem; margin: 1px 0.5rem;
+  border-radius: 8px; font-size: 13.5px; font-weight: 400;
+  color: rgba(255,255,255,0.5); cursor: pointer;
+  transition: all 0.16s; text-decoration: none; position: relative;
+}
+.nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
+.nav-item.active {
+  background: rgba(224,92,26,0.18); color: white; font-weight: 500;
+}
+.nav-item.active::before {
+  content: ''; position: absolute; left: 0; top: 6px; bottom: 6px;
+  width: 3px; background: var(--saffron-2); border-radius: 0 3px 3px 0;
+}
+.nav-icon { font-size: 15px; width: 18px; flex-shrink: 0; }
+.nav-badge {
+  margin-left: auto; font-size: 10px; font-weight: 600;
+  background: var(--red); color: white;
+  padding: 2px 7px; border-radius: 20px;
+}
+.nav-badge-amber { background: var(--amber); }
+
+.sidebar-bottom {
+  margin-top: auto; border-top: 1px solid rgba(255,255,255,0.07);
+  padding: 1rem 1.25rem;
+}
+.user-card { display: flex; align-items: center; gap: 10px; }
+.user-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--saffron), var(--amber));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700;
+  color: white; flex-shrink: 0;
+}
+.user-name { font-size: 13px; font-weight: 500; color: white; }
+.user-role { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+/* ── MAIN ── */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1; height: 100vh;
+  overflow-y: auto;
+  display: flex; flex-direction: column;
+}
+
+/* scrollbar */
+.main::-webkit-scrollbar { width: 5px; }
+.main::-webkit-scrollbar-track { background: transparent; }
+.main::-webkit-scrollbar-thumb { background: var(--mist-2); border-radius: 10px; }
+
+/* ── TOPBAR ── */
+.topbar {
+  background: white; border-bottom: 1px solid var(--border);
+  padding: 0 2rem; height: 58px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 50; flex-shrink: 0;
+}
+.breadcrumb {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--slate);
+}
+.breadcrumb-sep { color: var(--mist-2); }
+.breadcrumb-current { font-weight: 500; color: var(--ink); }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+
+.btn {
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+  border-radius: 8px; padding: 0.5rem 1rem; cursor: pointer;
+  transition: all 0.16s; border: none; display: inline-flex; align-items: center; gap: 6px;
+}
+.btn-ghost { background: var(--mist); color: var(--ink-2); border: 1px solid var(--border-2); }
+.btn-ghost:hover { background: var(--mist-2); }
+.btn-primary { background: var(--ink); color: white; }
+.btn-primary:hover { background: var(--ink-2); transform: translateY(-1px); }
+
+/* ── CONTENT ── */
+.content {
+  padding: 1.75rem 2rem 3rem;
+  display: flex; flex-direction: column; gap: 1.5rem;
+  flex: 1;
+}
+
+/* ── PAGE HEADER ── */
+.page-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  animation: fade-up 0.4s ease both;
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.page-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.5rem; font-weight: 700; color: var(--ink);
+  letter-spacing: -0.3px; line-height: 1.2;
+}
+.page-subtitle {
+  font-size: 13.5px; color: var(--slate);
+  font-weight: 300; margin-top: 4px; line-height: 1.5;
+}
+
+.total-records-badge {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--blue-pale); border: 1px solid rgba(37,99,235,0.18);
+  border-radius: 10px; padding: 0.6rem 1rem;
+  font-size: 13px; font-weight: 500; color: var(--blue);
+  transition: all 0.3s;
+}
+.total-records-badge .count {
+  font-family: 'Syne', sans-serif; font-size: 1.1rem;
+  font-weight: 700; color: var(--blue);
+}
+
+/* ── ADD SOURCES ROW ── */
+.add-sources-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;
+  animation: fade-up 0.4s ease 0.08s both;
+}
+
+/* ── CARD ── */
+.card {
+  background: white; border: 1px solid var(--border);
+  border-radius: 16px; overflow: hidden;
+}
+.card-header {
+  padding: 1.1rem 1.5rem 0.9rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.card-icon {
+  width: 36px; height: 36px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.card-icon-blue { background: var(--blue-pale); }
+.card-icon-green { background: var(--green-pale); }
+
+.card-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 600; color: var(--ink); }
+.card-desc { font-size: 12px; color: var(--slate-2); margin-top: 1px; }
+.card-body { padding: 1.25rem 1.5rem; }
+
+/* ── GOOGLE SHEETS CARD ── */
+.sheet-input-row {
+  display: flex; gap: 8px; margin-bottom: 10px;
+}
+.sheet-input {
+  flex: 1; padding: 0.65rem 1rem;
+  border: 1.5px solid var(--border-2); border-radius: 9px;
+  font-family: 'DM Sans', sans-serif; font-size: 13.5px;
+  color: var(--ink); background: var(--white); outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+.sheet-input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+}
+.sheet-input::placeholder { color: var(--slate-2); }
+.sheet-input.error { border-color: var(--red); box-shadow: 0 0 0 3px rgba(192,57,43,0.1); }
+.sheet-input.success { border-color: var(--green); box-shadow: 0 0 0 3px rgba(13,122,78,0.1); }
+
+.btn-fetch {
+  padding: 0.65rem 1.1rem; background: var(--blue); color: white;
+  border: none; border-radius: 9px; font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  transition: all 0.18s; white-space: nowrap;
+  display: flex; align-items: center; gap: 6px;
+}
+.btn-fetch:hover { background: #1d4fd8; transform: translateY(-1px); }
+.btn-fetch:disabled { background: var(--slate-2); cursor: not-allowed; transform: none; }
+
+.sheet-helpers {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 6px;
+}
+.helper-text { font-size: 12px; color: var(--slate-2); }
+.helper-link {
+  font-size: 12px; color: var(--blue); font-weight: 500;
+  text-decoration: none; cursor: pointer;
+  padding: 2px 6px; border-radius: 4px; transition: background 0.16s;
+}
+.helper-link:hover { background: var(--blue-pale); }
+
+/* ── FILE UPLOAD CARD ── */
+.dropzone {
+  border: 2px dashed var(--border-2); border-radius: 12px;
+  padding: 1.75rem 1.25rem; text-align: center;
+  transition: all 0.2s; cursor: pointer; position: relative;
+  background: var(--mist);
+}
+.dropzone:hover, .dropzone.drag-over {
+  border-color: var(--saffron);
+  background: var(--saffron-pale);
+}
+.dropzone.drag-over .drop-icon { transform: scale(1.15); }
+
+.drop-icon { font-size: 28px; margin-bottom: 8px; transition: transform 0.2s; display: block; }
+.drop-title { font-size: 13.5px; font-weight: 500; color: var(--ink-2); margin-bottom: 4px; }
+.drop-sub { font-size: 12px; color: var(--slate-2); margin-bottom: 12px; }
+
+.btn-browse {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 0.5rem 1.1rem; background: white;
+  border: 1.5px solid var(--border-2); border-radius: 8px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  font-weight: 500; color: var(--ink-2); cursor: pointer;
+  transition: all 0.16s;
+}
+.btn-browse:hover { border-color: var(--saffron); color: var(--saffron); background: var(--saffron-pale); }
+
+.file-types { font-size: 11px; color: var(--slate-2); margin-top: 10px; letter-spacing: 0.3px; }
+
+input[type="file"] { display: none; }
+
+/* ── SOURCES LIST ── */
+.sources-section { animation: fade-up 0.4s ease 0.16s both; }
+
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 0.85rem;
+}
+.section-title {
+  font-family: 'Syne', sans-serif; font-size: 14px;
+  font-weight: 600; color: var(--ink);
+  display: flex; align-items: center; gap: 8px;
+}
+.source-count-pill {
+  font-size: 11px; font-weight: 600;
+  background: var(--blue-pale); color: var(--blue);
+  padding: 2px 9px; border-radius: 20px;
+}
+
+.empty-state {
+  background: white; border: 1.5px dashed var(--border-2);
+  border-radius: 14px; padding: 2.5rem;
+  text-align: center; color: var(--slate-2);
+}
+.empty-icon { font-size: 32px; margin-bottom: 10px; opacity: 0.5; }
+.empty-text { font-size: 13.5px; font-weight: 400; }
+.empty-sub { font-size: 12px; margin-top: 4px; }
+
+/* ── SOURCE TABLE ── */
+.sources-table-wrap {
+  background: white; border: 1px solid var(--border);
+  border-radius: 14px; overflow: hidden;
+}
+
+.sources-table {
+  width: 100%; border-collapse: collapse;
+}
+
+.sources-table thead tr {
+  background: var(--mist);
+  border-bottom: 1px solid var(--border);
+}
+
+.sources-table th {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.8px;
+  text-transform: uppercase; color: var(--slate);
+  padding: 0.7rem 1.25rem; text-align: left;
+}
+
+.sources-table td {
+  padding: 0; border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.sources-table tr:last-child td { border-bottom: none; }
+
+.source-row-main {
+  display: flex; align-items: center; gap: 12px;
+  padding: 0.85rem 1.25rem;
+}
+
+.source-type-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0;
+}
+.type-sheet { background: #E8F5E9; }
+.type-excel { background: #E8F5E9; }
+.type-csv   { background: #EEF3FF; }
+
+.source-name-col { flex: 1; min-width: 0; }
+.source-name {
+  font-size: 13.5px; font-weight: 500; color: var(--ink-2);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.source-url { font-size: 11px; color: var(--slate-2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; }
+
+.source-type-badge {
+  font-size: 11px; font-weight: 500;
+  padding: 3px 10px; border-radius: 20px; white-space: nowrap;
+  flex-shrink: 0;
+}
+.badge-sheet { background: #E8F5E9; color: #1B5E20; }
+.badge-excel { background: #E8F5E9; color: #1B5E20; }
+.badge-csv   { background: var(--blue-pale); color: var(--blue); }
+
+.source-rows-col {
+  min-width: 90px; text-align: right;
+  flex-shrink: 0;
+}
+.source-rows {
+  font-family: 'Syne', sans-serif; font-size: 13px;
+  font-weight: 700; color: var(--ink);
+}
+.source-rows-label { font-size: 11px; color: var(--slate-2); }
+
+.source-status {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 12px; font-weight: 500; min-width: 90px; flex-shrink: 0;
+}
+.status-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.status-connected { color: var(--green); }
+.status-dot-green { background: var(--green); }
+.status-uploading { color: var(--blue); }
+.status-dot-blue { background: var(--blue); animation: pulse 1.2s ease-in-out infinite; }
+.status-error { color: var(--red); }
+.status-dot-red { background: var(--red); }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.6); }
+}
+
+.source-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.action-btn {
+  width: 28px; height: 28px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border-2); background: white;
+  cursor: pointer; font-size: 13px; color: var(--slate);
+  transition: all 0.16s;
+}
+.action-btn:hover { background: var(--mist); color: var(--ink); }
+.action-btn.danger:hover { background: var(--red-pale); border-color: rgba(192,57,43,0.2); color: var(--red); }
+
+/* ── PREVIEW TABLE ── */
+.preview-wrap {
+  border-top: 1px solid var(--border);
+  overflow-x: auto;
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.35s ease;
+}
+.preview-wrap.open { max-height: 240px; overflow-x: auto; overflow-y: hidden; }
+
+.preview-inner { padding: 0.75rem 1.25rem 1rem; }
+.preview-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.8px;
+  text-transform: uppercase; color: var(--slate-2);
+  margin-bottom: 8px;
+}
+.preview-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 12px; min-width: 500px;
+}
+.preview-table th {
+  background: var(--mist); padding: 6px 12px;
+  text-align: left; font-weight: 600; color: var(--slate);
+  border: 1px solid var(--border); white-space: nowrap;
+}
+.preview-table td {
+  padding: 5px 12px; border: 1px solid var(--border);
+  color: var(--ink-2); white-space: nowrap;
+}
+.preview-table tr:nth-child(even) td { background: var(--mist); }
+
+/* ── ANALYZE SECTION ── */
+.analyze-section {
+  animation: fade-up 0.4s ease 0.24s both;
+}
+
+.analyze-card {
+  background: var(--ink); border-radius: 16px;
+  padding: 1.75rem 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 2rem; position: relative; overflow: hidden;
+}
+
+.analyze-card::before {
+  content: '';
+  position: absolute; top: -40px; right: -40px;
+  width: 180px; height: 180px;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='90' cy='90' r='85' stroke='white' stroke-width='0.6' fill='none'/%3E%3Ccircle cx='90' cy='90' r='60' stroke='white' stroke-width='0.4' fill='none'/%3E%3Ccircle cx='90' cy='90' r='35' stroke='white' stroke-width='0.4' fill='none'/%3E%3Cg stroke='white' stroke-width='0.35'%3E%3Cline x1='90' y1='5' x2='90' y2='175'/%3E%3Cline x1='5' y1='90' x2='175' y2='90'/%3E%3Cline x1='90' y1='5' x2='90' y2='175' transform='rotate(45 90 90)'/%3E%3Cline x1='90' y1='5' x2='90' y2='175' transform='rotate(22.5 90 90)'/%3E%3Cline x1='90' y1='5' x2='90' y2='175' transform='rotate(67.5 90 90)'/%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.06; pointer-events: none;
+}
+
+.analyze-info { position: relative; z-index: 2; }
+.analyze-title {
+  font-family: 'Syne', sans-serif; font-size: 1.05rem;
+  font-weight: 700; color: white; margin-bottom: 4px;
+}
+.analyze-sub { font-size: 13px; color: rgba(255,255,255,0.45); font-weight: 300; }
+
+.analyze-meta {
+  display: flex; gap: 1.5rem; margin-top: 12px;
+}
+.analyze-meta-item {
+  display: flex; flex-direction: column; gap: 1px;
+}
+.analyze-meta-val {
+  font-family: 'Syne', sans-serif; font-size: 1.1rem;
+  font-weight: 700; color: var(--saffron-2);
+}
+.analyze-meta-label { font-size: 11px; color: rgba(255,255,255,0.35); }
+
+.analyze-right { display: flex; flex-direction: column; gap: 10px; align-items: flex-end; position: relative; z-index: 2; }
+
+.btn-analyze {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0.85rem 2rem; background: var(--saffron);
+  color: white; border: none; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 15px;
+  font-weight: 500; cursor: pointer; transition: all 0.2s;
+  white-space: nowrap;
+}
+.btn-analyze:hover:not(:disabled) { background: #c4511a; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(224,92,26,0.3); }
+.btn-analyze:disabled {
+  background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.35);
+  cursor: not-allowed; transform: none; box-shadow: none;
+}
+
+.btn-analyze-spinner {
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  animation: spin 0.7s linear infinite; display: none;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.analyze-hint {
+  font-size: 12px; color: rgba(255,255,255,0.3); text-align: right;
+}
+
+/* ── TOAST NOTIFICATIONS ── */
+.toast-container {
+  position: fixed; top: 72px; right: 20px;
+  display: flex; flex-direction: column; gap: 8px;
+  z-index: 999;
+}
+
+.toast {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 12px 16px; border-radius: 10px;
+  min-width: 280px; max-width: 360px;
+  box-shadow: 0 4px 20px rgba(13,21,32,0.12);
+  animation: toast-in 0.3s ease;
+  font-size: 13px;
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes toast-out {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(20px); }
+}
+
+.toast-success { background: white; border: 1px solid rgba(13,122,78,0.2); }
+.toast-error   { background: white; border: 1px solid rgba(192,57,43,0.2); }
+.toast-warning { background: white; border: 1px solid rgba(212,136,14,0.2); }
+.toast-info    { background: white; border: 1px solid rgba(37,99,235,0.2); }
+
+.toast-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.toast-body { flex: 1; }
+.toast-title { font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.toast-msg { color: var(--slate); font-size: 12px; line-height: 1.4; }
+.toast-close {
+  color: var(--slate-2); cursor: pointer; font-size: 16px; line-height: 1;
+  padding: 0 2px; transition: color 0.16s;
+}
+.toast-close:hover { color: var(--ink); }
+
+/* ── STATUS BAR (during analysis) ── */
+.status-bar {
+  background: white; border: 1px solid var(--border);
+  border-radius: 14px; padding: 1.25rem 1.5rem;
+  display: none; animation: fade-up 0.3s ease;
+}
+.status-bar.show { display: block; }
+.status-bar-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.status-bar-title {
+  font-family: 'Syne', sans-serif; font-size: 13.5px;
+  font-weight: 600; color: var(--ink);
+  display: flex; align-items: center; gap: 8px;
+}
+.status-spinner {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid var(--mist-2); border-top-color: var(--blue);
+  animation: spin 0.7s linear infinite;
+}
+.progress-bar-bg {
+  height: 6px; background: var(--mist-2);
+  border-radius: 3px; overflow: hidden; margin-bottom: 10px;
+}
+.progress-bar-fill {
+  height: 100%; background: linear-gradient(90deg, var(--blue), var(--saffron));
+  border-radius: 3px; width: 0%;
+  transition: width 0.4s ease;
+}
+.status-steps {
+  display: flex; gap: 2rem; margin-top: 8px;
+}
+.status-step {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--slate-2);
+}
+.status-step.done { color: var(--green); }
+.status-step.active { color: var(--blue); font-weight: 500; }
+.step-check { font-size: 12px; }
+
+/* ── DRAG OVERLAY ── */
+.drag-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(224,92,26,0.06);
+  border: 3px dashed var(--saffron);
+  z-index: 500; pointer-events: none;
+  border-radius: 0;
+  align-items: center; justify-content: center;
+}
+.drag-overlay.show { display: flex; }
+.drag-overlay-text {
+  font-family: 'Syne', sans-serif; font-size: 1.5rem;
+  font-weight: 700; color: var(--saffron);
+}
+</style>
+</head>
+<body>
+
+<!-- ════════ DRAG OVERLAY ════════ -->
+<div class="drag-overlay" id="drag-overlay">
+  <div class="drag-overlay-text">📂 Drop file anywhere to upload</div>
+</div>
+
+<!-- ════════ TOAST CONTAINER ════════ -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ════════ SIDEBAR ════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+      <circle cx="16" cy="16" r="14" stroke="rgba(255,255,255,0.4)" stroke-width="1.2"/>
+      <circle cx="16" cy="16" r="5" fill="#E05C1A"/>
+      <g stroke="rgba(255,255,255,0.4)" stroke-width="1">
+        <line x1="16" y1="2" x2="16" y2="7"/><line x1="16" y1="25" x2="16" y2="30"/>
+        <line x1="2" y1="16" x2="7" y2="16"/><line x1="25" y1="16" x2="30" y2="16"/>
+      </g>
+    </svg>
+    <span class="logo-text">Nirn<span>ay</span></span>
+  </div>
+
+  <div class="sidebar-section-label">Overview</div>
+  <a class="nav-item" href="#">
+    <span class="nav-icon">⬛</span> Dashboard
+  </a>
+  <a class="nav-item" href="#">
+    <span class="nav-icon">🔔</span> Alerts
+    <span class="nav-badge">3</span>
+  </a>
+
+  <div class="sidebar-section-label">Feedback</div>
+  <a class="nav-item active" href="#">
+    <span class="nav-icon">📤</span> Upload Data
+  </a>
+  <a class="nav-item" href="#">
+    <span class="nav-icon">📊</span> Sentiment View
+  </a>
+  <a class="nav-item" href="#">
+    <span class="nav-icon">📄</span> AI Reports
+    <span class="nav-badge nav-badge-amber">2</span>
+  </a>
+
+  <div class="sidebar-section-label">Decisions</div>
+  <a class="nav-item" href="#">
+    <span class="nav-icon">🌿</span> Decision Trees
+  </a>
+  <a class="nav-item" href="#">
+    <span class="nav-icon">📋</span> Action Plans
+  </a>
+
+  <div class="sidebar-section-label">Workspace</div>
+  <a class="nav-item" href="#">
+    <span class="nav-icon">👥</span> Team
+  </a>
+  <a class="nav-item" href="#">
+    <span class="nav-icon">⚙️</span> Settings
+  </a>
+
+  <div class="sidebar-bottom">
+    <div class="user-card">
+      <div class="user-avatar">RK</div>
+      <div>
+        <div class="user-name">Rahul Kapoor</div>
+        <div class="user-role">Founder · Spice Route</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ════════ MAIN ════════ -->
+<main class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="breadcrumb">
+      <span>Nirnay</span>
+      <span class="breadcrumb-sep">›</span>
+      <span>Feedback</span>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Upload Data</span>
+    </div>
+    <div class="topbar-right">
+      <button class="btn btn-ghost" onclick="clearAll()">Clear all</button>
+      <button class="btn btn-primary" onclick="startAnalysis()">Analyze All Data ›</button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <div>
+        <div class="page-title">Upload &amp; Integrate Data</div>
+        <div class="page-subtitle">Combine feedback from multiple sources into one unified dataset for AI analysis</div>
+      </div>
+      <div class="total-records-badge" id="total-badge">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/><line x1="1" y1="6" x2="15" y2="6" stroke="currentColor" stroke-width="1.4"/></svg>
+        <span>Total records:</span>
+        <span class="count" id="total-count">0</span>
+      </div>
+    </div>
+
+    <!-- ADD SOURCE CARDS -->
+    <div class="add-sources-row">
+
+      <!-- GOOGLE SHEETS CARD -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon card-icon-blue">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="16" height="16" rx="3" fill="#4285F4"/><line x1="2" y1="7" x2="18" y2="7" stroke="white" stroke-width="1.2"/><line x1="2" y1="11" x2="18" y2="11" stroke="white" stroke-width="1.2"/><line x1="7" y1="7" x2="7" y2="18" stroke="white" stroke-width="1.2"/></svg>
+          </div>
+          <div>
+            <div class="card-title">Google Sheets</div>
+            <div class="card-desc">Connect via shareable link</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="sheet-input-row">
+            <input
+              class="sheet-input"
+              id="sheet-url"
+              type="url"
+              placeholder="Paste Google Sheets link here…"
+              onkeydown="if(event.key==='Enter') fetchSheet()"
+            />
+            <button class="btn-fetch" id="btn-fetch" onclick="fetchSheet()">
+              <span id="fetch-icon">⟳</span>
+              <span id="fetch-label">Fetch Data</span>
+            </button>
+          </div>
+          <div class="sheet-helpers">
+            <span class="helper-text">🔗 Connect Google Forms via Google Sheets</span>
+            <a class="helper-link" onclick="showToast('info','How to share','Open your Google Sheet → Share → Anyone with link → Copy link and paste above.')">How to share? ›</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- FILE UPLOAD CARD -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon card-icon-green">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="2" width="11" height="16" rx="2" fill="#1B5E20" opacity="0.15" stroke="#1B5E20" stroke-width="1.4"/><line x1="6" y1="7" x2="11" y2="7" stroke="#1B5E20" stroke-width="1.2"/><line x1="6" y1="10" x2="13" y2="10" stroke="#1B5E20" stroke-width="1.2"/><line x1="6" y1="13" x2="10" y2="13" stroke="#1B5E20" stroke-width="1.2"/><path d="M12 2v5h5" fill="none" stroke="#1B5E20" stroke-width="1.2"/></svg>
+          </div>
+          <div>
+            <div class="card-title">Upload File</div>
+            <div class="card-desc">Excel or CSV from your device</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div
+            class="dropzone"
+            id="dropzone"
+            onclick="document.getElementById('file-input').click()"
+            ondragover="handleDragOver(event)"
+            ondragleave="handleDragLeave(event)"
+            ondrop="handleDrop(event)"
+          >
+            <span class="drop-icon">📂</span>
+            <div class="drop-title">Drag &amp; drop your file here</div>
+            <div class="drop-sub">or click to browse from your computer</div>
+            <button class="btn-browse" onclick="event.stopPropagation(); document.getElementById('file-input').click()">
+              📎 Browse File
+            </button>
+            <div class="file-types">Supports .xlsx · .xls · .csv</div>
+          </div>
+          <input type="file" id="file-input" accept=".xlsx,.xls,.csv" onchange="handleFileSelect(event)"/>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SOURCES LIST -->
+    <div class="sources-section" id="sources-section">
+      <div class="section-header">
+        <div class="section-title">
+          Connected Data Sources
+          <span class="source-count-pill" id="source-count-pill">0 sources</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span id="sources-sub" style="font-size:12px;color:var(--slate-2);">Add sources above to get started</span>
+        </div>
+      </div>
+
+      <!-- EMPTY STATE -->
+      <div class="empty-state" id="empty-state">
+        <div class="empty-icon">📋</div>
+        <div class="empty-text">No data sources added yet</div>
+        <div class="empty-sub">Connect a Google Sheet or upload an Excel / CSV file above</div>
+      </div>
+
+      <!-- SOURCES TABLE (hidden until sources exist) -->
+      <div class="sources-table-wrap" id="sources-table-wrap" style="display:none;">
+        <table class="sources-table">
+          <thead>
+            <tr>
+              <th style="width:36px;"></th>
+              <th>Source name</th>
+              <th>Type</th>
+              <th>Records</th>
+              <th>Status</th>
+              <th style="text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="sources-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- STATUS BAR -->
+    <div class="status-bar" id="status-bar">
+      <div class="status-bar-header">
+        <div class="status-bar-title">
+          <div class="status-spinner" id="status-spinner"></div>
+          <span id="status-title">Analyzing feedback using AI…</span>
+        </div>
+        <span style="font-size:12px;color:var(--slate-2);" id="status-pct">0%</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+      </div>
+      <div class="status-steps">
+        <div class="status-step" id="step-merge"><span class="step-check">○</span> Merging sources</div>
+        <div class="status-step" id="step-clean"><span class="step-check">○</span> Cleaning data</div>
+        <div class="status-step" id="step-sentiment"><span class="step-check">○</span> Sentiment analysis</div>
+        <div class="status-step" id="step-report"><span class="step-check">○</span> Generating report</div>
+      </div>
+    </div>
+
+    <!-- ANALYZE CARD -->
+    <div class="analyze-section">
+      <div class="analyze-card">
+        <div class="analyze-info">
+          <div class="analyze-title">Ready to generate insights?</div>
+          <div class="analyze-sub">Nirnay will merge all sources, run sentiment analysis, and build your AI report.</div>
+          <div class="analyze-meta">
+            <div class="analyze-meta-item">
+              <span class="analyze-meta-val" id="meta-sources">0</span>
+              <span class="analyze-meta-label">Sources</span>
+            </div>
+            <div class="analyze-meta-item">
+              <span class="analyze-meta-val" id="meta-records">0</span>
+              <span class="analyze-meta-label">Total records</span>
+            </div>
+            <div class="analyze-meta-item">
+              <span class="analyze-meta-val" id="meta-est">—</span>
+              <span class="analyze-meta-label">Est. time</span>
+            </div>
+          </div>
+        </div>
+        <div class="analyze-right">
+          <button class="btn-analyze" id="btn-analyze" onclick="startAnalysis()" disabled>
+            <div class="btn-analyze-spinner" id="analyze-spinner"></div>
+            <span id="analyze-label">✦ Analyze All Data</span>
+          </button>
+          <span class="analyze-hint" id="analyze-hint">Add at least one data source to begin</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+// ── STATE ──
+let sources = [];
+let nextId = 1;
+let analyzing = false;
+
+// Sample preview data per type
+const samplePreviews = {
+  sheet: {
+    cols: ['Timestamp', 'Customer Name', 'Rating', 'Feedback', 'Location'],
+    rows: [
+      ['2026-03-25 12:04', 'Anjali Mehra', '⭐⭐⭐', 'Service was very slow today', 'CP'],
+      ['2026-03-25 13:22', 'Rohan Gupta', '⭐⭐⭐⭐⭐', 'Amazing biryani, will come again!', 'Hauz Khas'],
+      ['2026-03-25 14:10', 'Sita Patel', '⭐⭐', 'AC was not working properly', 'Lajpat Nagar'],
+      ['2026-03-25 15:45', 'Vikash Rao', '⭐⭐⭐⭐', 'Good food, parking was an issue', 'CP'],
+      ['2026-03-25 17:02', 'Neha Singh', '⭐⭐⭐⭐⭐', 'Loved the ambiance and staff attitude', 'Hauz Khas'],
+    ]
+  },
+  excel: {
+    cols: ['Date', 'Review Source', 'Stars', 'Comment', 'Verified'],
+    rows: [
+      ['25 Mar 2026', 'Zomato', '3', 'Portion size reduced recently', 'Yes'],
+      ['25 Mar 2026', 'Swiggy', '5', 'Fast delivery, food was hot', 'Yes'],
+      ['24 Mar 2026', 'Google', '2', 'Waited 40 mins for table', 'No'],
+      ['24 Mar 2026', 'Zomato', '4', 'Good value for money', 'Yes'],
+      ['23 Mar 2026', 'Direct', '1', 'Wrong order delivered twice', 'Yes'],
+    ]
+  },
+  csv: {
+    cols: ['id', 'source', 'rating', 'text', 'date'],
+    rows: [
+      ['001', 'CRM Export', '4', 'Regular customer, happy with loyalty points', '2026-03-24'],
+      ['002', 'CRM Export', '2', 'Complained about billing error', '2026-03-23'],
+      ['003', 'CRM Export', '5', 'Birthday dinner was perfect', '2026-03-22'],
+      ['004', 'CRM Export', '3', 'Average experience this time', '2026-03-21'],
+      ['005', 'CRM Export', '4', 'Staff was helpful and friendly', '2026-03-20'],
+    ]
+  }
+};
+
+// ── GOOGLE SHEETS FETCH ──
+async function fetchSheet() {
+  const input = document.getElementById('sheet-url');
+  const url = input.value.trim();
+  const btn = document.getElementById('btn-fetch');
+  const icon = document.getElementById('fetch-icon');
+  const label = document.getElementById('fetch-label');
+
+  if (!url) {
+    input.classList.add('error');
+    showToast('error', 'Empty URL', 'Please paste a Google Sheets link first.');
+    setTimeout(() => input.classList.remove('error'), 2000);
+    return;
+  }
+
+  if (!url.includes('docs.google.com/spreadsheets') && !url.includes('google.com')) {
+    input.classList.add('error');
+    showToast('error', 'Invalid link', 'Please paste a valid Google Sheets URL (docs.google.com/spreadsheets/…)');
+    setTimeout(() => input.classList.remove('error'), 2500);
+    return;
+  }
+
+  // Loading state
+  btn.disabled = true;
+  icon.textContent = '';
+  label.textContent = 'Fetching…';
+  const spinner = document.createElement('span');
+  spinner.style.cssText = 'width:12px;height:12px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);border-top-color:white;animation:spin 0.7s linear infinite;display:inline-block;';
+  btn.insertBefore(spinner, btn.firstChild);
+
+  // Simulate fetch (1.5s)
+  await sleep(1500);
+
+  // Extract sheet name from URL or use default
+  let sheetName = 'Form Responses ' + (sources.filter(s => s.type === 'sheet').length + 1);
+  try {
+    const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+    if (match) sheetName = 'Google Sheet · ' + match[1].slice(0, 8) + '…';
+  } catch(e) {}
+
+  const rows = 85 + Math.floor(Math.random() * 150);
+  addSource({ type: 'sheet', name: sheetName, url: url, rows });
+
+  // Reset
+  input.value = '';
+  input.classList.add('success');
+  setTimeout(() => input.classList.remove('success'), 2000);
+  btn.removeChild(spinner);
+  icon.textContent = '⟳';
+  label.textContent = 'Fetch Data';
+  btn.disabled = false;
+
+  showToast('success', 'Sheet connected!', `"${sheetName}" added with ${rows} records.`);
+}
+
+// ── FILE UPLOAD ──
+function handleFileSelect(event) {
+  const file = event.target.files[0];
+  if (file) processFile(file);
+  event.target.value = '';
+}
+
+function handleDrop(event) {
+  event.preventDefault();
+  document.getElementById('dropzone').classList.remove('drag-over');
+  document.getElementById('drag-overlay').classList.remove('show');
+  const file = event.dataTransfer.files[0];
+  if (file) processFile(file);
+}
+
+function handleDragOver(event) {
+  event.preventDefault();
+  document.getElementById('dropzone').classList.add('drag-over');
+}
+
+function handleDragLeave(event) {
+  document.getElementById('dropzone').classList.remove('drag-over');
+}
+
+// Global drag for the full window
+document.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  document.getElementById('drag-overlay').classList.add('show');
+});
+document.addEventListener('dragleave', (e) => {
+  if (!e.relatedTarget) document.getElementById('drag-overlay').classList.remove('show');
+});
+document.addEventListener('drop', (e) => {
+  e.preventDefault();
+  document.getElementById('drag-overlay').classList.remove('show');
+  const dropzone = document.getElementById('dropzone');
+  const file = e.dataTransfer.files[0];
+  if (file && !dropzone.contains(e.target)) processFile(file);
+});
+
+async function processFile(file) {
+  const allowed = ['.xlsx', '.xls', '.csv'];
+  const ext = '.' + file.name.split('.').pop().toLowerCase();
+  if (!allowed.includes(ext)) {
+    showToast('error', 'Unsupported file', `"${file.name}" is not supported. Use .xlsx, .xls, or .csv`);
+    return;
+  }
+
+  const type = ext === '.csv' ? 'csv' : 'excel';
+  const rows = 40 + Math.floor(Math.random() * 200);
+
+  // Show uploading state
+  const tmpId = nextId++;
+  const tmp = { id: tmpId, type, name: file.name, url: file.name, rows, status: 'uploading', preview: samplePreviews[type] };
+  sources.push(tmp);
+  renderSources();
+
+  await sleep(1400);
+
+  const src = sources.find(s => s.id === tmpId);
+  if (src) src.status = 'connected';
+  renderSources();
+  showToast('success', 'File uploaded!', `"${file.name}" added with ${rows} records.`);
+}
+
+// ── ADD SOURCE ──
+function addSource(opts) {
+  const type = opts.type;
+  sources.push({
+    id: nextId++,
+    type,
+    name: opts.name,
+    url: opts.url,
+    rows: opts.rows,
+    status: 'connected',
+    preview: samplePreviews[type],
+    previewOpen: false
+  });
+  renderSources();
+}
+
+// ── REMOVE SOURCE ──
+function removeSource(id) {
+  sources = sources.filter(s => s.id !== id);
+  renderSources();
+  showToast('info', 'Source removed', 'Data source has been disconnected.');
+}
+
+// ── TOGGLE PREVIEW ──
+function togglePreview(id) {
+  const src = sources.find(s => s.id === id);
+  if (src) src.previewOpen = !src.previewOpen;
+  const wrap = document.getElementById('preview-' + id);
+  if (wrap) wrap.classList.toggle('open', src.previewOpen);
+  const btn = document.querySelector(`[data-preview="${id}"]`);
+  if (btn) btn.textContent = src.previewOpen ? '▲ Hide preview' : '▼ Preview';
+}
+
+// ── RENDER SOURCES ──
+function renderSources() {
+  const empty = document.getElementById('empty-state');
+  const table = document.getElementById('sources-table-wrap');
+  const tbody = document.getElementById('sources-tbody');
+  const pill  = document.getElementById('source-count-pill');
+  const sub   = document.getElementById('sources-sub');
+  const totalCount = document.getElementById('total-count');
+  const metaSrc  = document.getElementById('meta-sources');
+  const metaRec  = document.getElementById('meta-records');
+  const metaEst  = document.getElementById('meta-est');
+  const btnAnalyze = document.getElementById('btn-analyze');
+  const analyzeHint = document.getElementById('analyze-hint');
+
+  const totalRows = sources.filter(s => s.status === 'connected').reduce((a, s) => a + s.rows, 0);
+  const connectedCount = sources.filter(s => s.status === 'connected').length;
+
+  totalCount.textContent = totalRows.toLocaleString();
+  pill.textContent = `${sources.length} source${sources.length !== 1 ? 's' : ''}`;
+  metaSrc.textContent = connectedCount;
+  metaRec.textContent = totalRows.toLocaleString();
+  metaEst.textContent = totalRows > 0 ? `~${Math.max(1, Math.round(totalRows / 120))}m` : '—';
+
+  if (sources.length === 0) {
+    empty.style.display = 'block';
+    table.style.display = 'none';
+    sub.textContent = 'Add sources above to get started';
+    btnAnalyze.disabled = true;
+    analyzeHint.textContent = 'Add at least one data source to begin';
+  } else {
+    empty.style.display = 'none';
+    table.style.display = 'block';
+    sub.textContent = `${totalRows.toLocaleString()} total records ready`;
+    btnAnalyze.disabled = connectedCount === 0 || analyzing;
+    analyzeHint.textContent = connectedCount > 0
+      ? `${connectedCount} source${connectedCount > 1 ? 's' : ''} · ${totalRows.toLocaleString()} records`
+      : 'Waiting for sources to finish uploading…';
+  }
+
+  tbody.innerHTML = '';
+  sources.forEach(src => {
+    const typeLabels = { sheet: 'Google Sheet', excel: 'Excel', csv: 'CSV' };
+    const typeBadges = { sheet: 'badge-sheet', excel: 'badge-excel', csv: 'badge-csv' };
+    const typeIcons  = { sheet: '📊', excel: '📗', csv: '📄' };
+    const typeColors = { sheet: 'type-sheet', excel: 'type-excel', csv: 'type-csv' };
+
+    const isConnected = src.status === 'connected';
+    const isUploading = src.status === 'uploading';
+
+    let statusHtml = '';
+    if (isConnected) {
+      statusHtml = `<div class="source-status status-connected"><div class="status-dot status-dot-green"></div>Connected</div>`;
+    } else if (isUploading) {
+      statusHtml = `<div class="source-status status-uploading"><div class="status-dot status-dot-blue"></div>Uploading…</div>`;
+    } else {
+      statusHtml = `<div class="source-status status-error"><div class="status-dot status-dot-red"></div>Error</div>`;
+    }
+
+    // Build preview table HTML
+    let previewHtml = '';
+    if (src.preview) {
+      const headerCells = src.preview.cols.map(c => `<th>${c}</th>`).join('');
+      const rowCells = src.preview.rows.map(r =>
+        `<tr>${r.map(cell => `<td>${cell}</td>`).join('')}</tr>`
+      ).join('');
+      previewHtml = `
+        <div class="preview-inner">
+          <div class="preview-label">Preview — first 5 rows</div>
+          <div style="overflow-x:auto;">
+            <table class="preview-table">
+              <thead><tr>${headerCells}</tr></thead>
+              <tbody>${rowCells}</tbody>
+            </table>
+          </div>
+        </div>`;
+    }
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td colspan="6" style="padding:0;">
+        <div class="source-row-main">
+          <div class="source-type-icon ${typeColors[src.type]}">${typeIcons[src.type]}</div>
+          <div class="source-name-col">
+            <div class="source-name">${src.name}</div>
+            <div class="source-url">${src.url}</div>
+          </div>
+          <span class="source-type-badge ${typeBadges[src.type]}">${typeLabels[src.type]}</span>
+          <div class="source-rows-col">
+            <div class="source-rows">${isUploading ? '…' : src.rows.toLocaleString()}</div>
+            <div class="source-rows-label">rows</div>
+          </div>
+          ${statusHtml}
+          <div class="source-actions">
+            ${isConnected ? `<button class="action-btn" data-preview="${src.id}" onclick="togglePreview(${src.id})" title="Preview data">▼ Preview</button>` : ''}
+            ${src.type === 'sheet' ? `<button class="action-btn" onclick="refreshSheet(${src.id})" title="Refresh">↻</button>` : ''}
+            <button class="action-btn danger" onclick="removeSource(${src.id})" title="Remove">✕</button>
+          </div>
+        </div>
+        <div class="preview-wrap ${src.previewOpen ? 'open' : ''}" id="preview-${src.id}">
+          ${previewHtml}
+        </div>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// ── REFRESH SHEET ──
+async function refreshSheet(id) {
+  const src = sources.find(s => s.id === id);
+  if (!src) return;
+  src.status = 'uploading';
+  renderSources();
+  await sleep(1200);
+  src.rows = src.rows + Math.floor(Math.random() * 20);
+  src.status = 'connected';
+  renderSources();
+  showToast('success', 'Sheet refreshed', `${src.name} now has ${src.rows} records.`);
+}
+
+// ── CLEAR ALL ──
+function clearAll() {
+  if (sources.length === 0) { showToast('warning', 'Nothing to clear', 'No data sources have been added.'); return; }
+  sources = [];
+  renderSources();
+  showToast('info', 'Cleared', 'All data sources removed.');
+}
+
+// ── ANALYZE ──
+async function startAnalysis() {
+  const connected = sources.filter(s => s.status === 'connected');
+  if (connected.length === 0) {
+    showToast('warning', 'No sources', 'Please add at least one connected data source before analyzing.');
+    return;
+  }
+
+  analyzing = true;
+  const bar = document.getElementById('status-bar');
+  const fill = document.getElementById('progress-fill');
+  const pct = document.getElementById('status-pct');
+  const btnLabel = document.getElementById('analyze-label');
+  const spinner = document.getElementById('analyze-spinner');
+  const steps = ['step-merge', 'step-clean', 'step-sentiment', 'step-report'];
+  const stepLabels = ['Merging sources…', 'Cleaning data…', 'Running sentiment AI…', 'Building report…'];
+
+  bar.classList.add('show');
+  spinner.style.display = 'block';
+  btnLabel.textContent = 'Analyzing…';
+  document.getElementById('btn-analyze').disabled = true;
+  document.getElementById('topbar-right')?.querySelector('.btn-primary') && (document.querySelector('.topbar-right .btn-primary').disabled = true);
+
+  const stepWidths = [20, 45, 75, 100];
+
+  for (let i = 0; i < steps.length; i++) {
+    // set current step active
+    document.getElementById(steps[i]).className = 'status-step active';
+    document.getElementById(steps[i]).querySelector('.step-check').textContent = '◉';
+    document.getElementById('status-title').textContent = stepLabels[i];
+
+    // animate progress
+    await animateProgress(fill, pct, i === 0 ? 0 : stepWidths[i - 1], stepWidths[i]);
+
+    // mark done
+    document.getElementById(steps[i]).className = 'status-step done';
+    document.getElementById(steps[i]).querySelector('.step-check').textContent = '✓';
+    await sleep(300);
+  }
+
+  // Done
+  await sleep(400);
+  bar.classList.remove('show');
+  analyzing = false;
+  spinner.style.display = 'none';
+  btnLabel.textContent = '✦ Analyze All Data';
+  document.getElementById('btn-analyze').disabled = false;
+
+  // Reset steps
+  steps.forEach(s => {
+    document.getElementById(s).className = 'status-step';
+    document.getElementById(s).querySelector('.step-check').textContent = '○';
+  });
+
+  showToast('success', `${connected.length} source${connected.length > 1 ? 's' : ''} processed!`,
+    `${connected.reduce((a,s)=>a+s.rows,0).toLocaleString()} records analyzed. Redirecting to your AI report…`);
+
+  await sleep(2200);
+  showToast('info', 'Report ready', 'Your AI sentiment report is now available in the Reports section.');
+}
+
+async function animateProgress(fill, pctEl, from, to) {
+  const steps = 30;
+  const delay = 30;
+  for (let i = 0; i <= steps; i++) {
+    const val = Math.round(from + (to - from) * (i / steps));
+    fill.style.width = val + '%';
+    pctEl.textContent = val + '%';
+    await sleep(delay);
+  }
+}
+
+// ── TOAST ──
+function showToast(type, title, msg) {
+  const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.innerHTML = `
+    <span class="toast-icon">${icons[type]}</span>
+    <div class="toast-body">
+      <div class="toast-title">${title}</div>
+      ${msg ? `<div class="toast-msg">${msg}</div>` : ''}
+    </div>
+    <span class="toast-close" onclick="dismissToast(this.parentElement)">×</span>`;
+  container.appendChild(toast);
+  setTimeout(() => dismissToast(toast), 5000);
+}
+
+function dismissToast(el) {
+  if (!el || !el.parentElement) return;
+  el.style.animation = 'toast-out 0.3s ease forwards';
+  setTimeout(() => el.remove(), 300);
+}
+
+// ── UTILS ──
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ── INIT ──
+renderSources();
+
+// Pre-load one demo source after 800ms for demo purposes
+setTimeout(() => {
+  addSource({
+    type: 'sheet',
+    name: 'Form Responses 1 — Spice Route',
+    url: 'https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms',
+    rows: 120
+  });
+}, 800);
+</script>
+</body>
+</html>
