@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nirnay — AI Report Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+
+/* ── RESET & BASE ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink:           #0D1520;
+  --ink-2:         #1A2740;
+  --saffron:       #E05C1A;
+  --saffron-pale:  #FDF0E8;
+  --green:         #0D7A4E;
+  --green-pale:    #E3F5EE;
+  --red:           #C0392B;
+  --red-pale:      #FDECEB;
+  --amber:         #D4880E;
+  --amber-pale:    #FDF6E3;
+  --blue:          #2563EB;
+  --blue-pale:     #EEF3FF;
+  --slate:         #6B7A99;
+  --slate-2:       #9AA5BE;
+  --mist:          #F5F6FA;
+  --mist-2:        #ECEEF5;
+  --white:         #FFFFFF;
+  --border:        rgba(13,21,32,0.08);
+  --border-2:      rgba(13,21,32,0.14);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--mist);
+  color: var(--ink);
+  min-height: 100vh;
+  padding-bottom: 4rem;
+}
+
+/* ── NAV ── */
+.nav {
+  background: var(--ink);
+  padding: 0 2rem;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  text-decoration: none;
+}
+
+.logo-text {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+}
+.logo-text span { color: #F2834A; }
+
+.nav-badge {
+  font-size: 11px;
+  font-weight: 500;
+  background: rgba(224,92,26,0.25);
+  color: #F2834A;
+  border: 1px solid rgba(242,131,74,0.3);
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+/* ── LAYOUT ── */
+.page-wrap {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 0;
+}
+
+/* ── PAGE HEADER ── */
+.page-header {
+  margin-bottom: 2rem;
+  animation: fade-up 0.5s ease both;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.page-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--saffron);
+  margin-bottom: 8px;
+}
+
+.page-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+.page-sub {
+  font-size: 14px;
+  color: var(--slate);
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+/* ── CARD ── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+
+.card-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-header-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  background: var(--saffron-pale);
+  flex-shrink: 0;
+}
+
+.card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.card-desc {
+  font-size: 12px;
+  color: var(--slate-2);
+  margin-top: 1px;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+/* ── INPUT AREA ── */
+.textarea-wrap {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+#feedback-input {
+  width: 100%;
+  min-height: 180px;
+  padding: 1rem 1.1rem;
+  border: 1.5px solid var(--border-2);
+  border-radius: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--ink);
+  background: var(--white);
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+
+#feedback-input:focus {
+  border-color: var(--saffron);
+  box-shadow: 0 0 0 3px rgba(224,92,26,0.1);
+}
+
+#feedback-input::placeholder {
+  color: var(--slate-2);
+  font-weight: 300;
+}
+
+.input-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.input-hint {
+  font-size: 12px;
+  color: var(--slate-2);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+#line-count {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--slate);
+  background: var(--mist);
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+/* ── GENERATE BUTTON ── */
+#btn-generate {
+  width: 100%;
+  padding: 0.85rem;
+  background: var(--saffron);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.15s, box-shadow 0.18s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  letter-spacing: 0.2px;
+}
+
+#btn-generate:hover:not(:disabled) {
+  background: #c4511a;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(224,92,26,0.28);
+}
+
+#btn-generate:disabled {
+  background: var(--slate-2);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.35);
+  border-top-color: white;
+  animation: spin 0.75s linear infinite;
+  display: none;
+  flex-shrink: 0;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── LOADING STATE ── */
+#loading-state {
+  display: none;
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+  animation: fade-up 0.3s ease;
+}
+
+.loading-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+  animation: pulse-scale 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-scale {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(0.88); opacity: 0.6; }
+}
+
+.loading-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.loading-sub {
+  font-size: 13px;
+  color: var(--slate-2);
+  font-weight: 300;
+}
+
+.loading-bar-bg {
+  width: 200px;
+  height: 4px;
+  background: var(--mist-2);
+  border-radius: 2px;
+  margin: 1rem auto 0;
+  overflow: hidden;
+}
+
+.loading-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--saffron), var(--amber));
+  border-radius: 2px;
+  animation: loading-sweep 1.6s ease-in-out infinite;
+  width: 40%;
+}
+
+@keyframes loading-sweep {
+  0%   { transform: translateX(-150%); }
+  100% { transform: translateX(450%); }
+}
+
+/* ── ERROR STATE ── */
+#error-state {
+  display: none;
+  background: var(--red-pale);
+  border: 1px solid rgba(192,57,43,0.2);
+  border-radius: 12px;
+  padding: 1.1rem 1.25rem;
+  display: none;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 1.25rem;
+  animation: fade-up 0.3s ease;
+}
+
+.error-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.error-title { font-size: 13.5px; font-weight: 600; color: var(--red); margin-bottom: 3px; }
+.error-msg { font-size: 12.5px; color: rgba(192,57,43,0.8); line-height: 1.5; font-weight: 300; }
+
+/* ── RESULTS AREA ── */
+#results-area {
+  display: none;
+  animation: fade-up 0.5s ease both;
+}
+
+.results-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.results-divider-line { flex: 1; height: 1px; background: var(--border); }
+.results-divider-text {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--slate-2);
+  white-space: nowrap;
+}
+
+/* ── SENTIMENT SECTION ── */
+.sentiment-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.sentiment-card {
+  border-radius: 12px;
+  padding: 1.1rem 1.25rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.sentiment-card-positive { background: var(--green-pale); }
+.sentiment-card-negative { background: var(--red-pale); }
+.sentiment-card-neutral  { background: var(--mist-2); }
+
+.sentiment-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.sentiment-card-positive .sentiment-label { color: var(--green); }
+.sentiment-card-negative .sentiment-label { color: var(--red); }
+.sentiment-card-neutral  .sentiment-label { color: var(--slate); }
+
+.sentiment-value {
+  font-family: 'Syne', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.sentiment-card-positive .sentiment-value { color: var(--green); }
+.sentiment-card-negative .sentiment-value { color: var(--red); }
+.sentiment-card-neutral  .sentiment-value { color: var(--slate); }
+
+.sentiment-pct {
+  font-size: 1rem;
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+/* Bar below value */
+.sentiment-bar {
+  margin-top: 10px;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+.sentiment-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1s ease;
+}
+
+.bar-positive { background: var(--green); }
+.bar-negative { background: var(--red); }
+.bar-neutral  { background: var(--slate); }
+
+/* Combined bar */
+.combined-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--mist-2);
+  display: flex;
+  overflow: hidden;
+  margin-top: 1rem;
+  gap: 2px;
+}
+
+.combined-seg {
+  height: 100%;
+  transition: width 1s ease;
+  border-radius: 4px;
+}
+
+/* ── TOP ISSUES ── */
+.issues-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.issue-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.75rem 1rem;
+  background: var(--mist);
+  border-radius: 10px;
+  transition: background 0.16s;
+}
+
+.issue-row:hover { background: var(--mist-2); }
+
+.issue-rank {
+  font-family: 'Syne', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--slate-2);
+  min-width: 22px;
+  text-align: center;
+}
+
+.issue-name {
+  flex: 1;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+.issue-bar-col { width: 100px; }
+
+.issue-bar-bg {
+  height: 6px;
+  background: var(--mist-2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.issue-bar-fill {
+  height: 100%;
+  background: var(--saffron);
+  border-radius: 3px;
+  transition: width 1s ease;
+}
+
+.issue-count {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  min-width: 28px;
+  text-align: right;
+}
+
+.issue-count-label {
+  font-size: 11px;
+  color: var(--slate-2);
+  min-width: 50px;
+  text-align: right;
+}
+
+/* ── INSIGHTS & RECOMMENDATIONS ── */
+.bullet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bullet-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 0.9rem 1rem;
+  background: var(--mist);
+  border-radius: 10px;
+  font-size: 13.5px;
+  color: var(--ink-2);
+  line-height: 1.55;
+  font-weight: 400;
+  transition: background 0.16s;
+  animation: fade-up 0.4s ease both;
+}
+
+.bullet-item:hover { background: var(--mist-2); }
+
+.bullet-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.bullet-dot-insights        { background: var(--blue-pale);   color: var(--blue); }
+.bullet-dot-recommendations { background: var(--green-pale);  color: var(--green); }
+
+/* ── SUCCESS BANNER ── */
+.success-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--green-pale);
+  border: 1px solid rgba(13,122,78,0.2);
+  border-radius: 10px;
+  padding: 0.75rem 1.1rem;
+  margin-bottom: 1.5rem;
+  font-size: 13px;
+  color: var(--green);
+  font-weight: 500;
+  animation: fade-up 0.3s ease;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .sentiment-grid { grid-template-columns: 1fr; }
+  .page-wrap { padding: 1.5rem 1rem 0; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a class="nav-logo" href="#">
+    <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+      <circle cx="16" cy="16" r="14" stroke="rgba(255,255,255,0.4)" stroke-width="1.2"/>
+      <circle cx="16" cy="16" r="5" fill="#E05C1A"/>
+      <g stroke="rgba(255,255,255,0.4)" stroke-width="1">
+        <line x1="16" y1="2"  x2="16" y2="7"/>
+        <line x1="16" y1="25" x2="16" y2="30"/>
+        <line x1="2"  y1="16" x2="7"  y2="16"/>
+        <line x1="25" y1="16" x2="30" y2="16"/>
+      </g>
+    </svg>
+    <span class="logo-text">Nirn<span>ay</span></span>
+  </a>
+  <span class="nav-badge">AI Report Generator</span>
+</nav>
+
+<!-- PAGE WRAP -->
+<div class="page-wrap">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="page-label">✦ AI-Powered</div>
+    <h1 class="page-title">AI Report Generator</h1>
+    <p class="page-sub">Paste customer feedback below — one entry per line. Nirnay's AI will analyze sentiment, surface top issues, and generate actionable insights.</p>
+  </div>
+
+  <!-- INPUT CARD -->
+  <div class="card" style="animation: fade-up 0.5s ease 0.05s both;">
+    <div class="card-header">
+      <div class="card-header-icon">📝</div>
+      <div>
+        <div class="card-title">Customer Feedback</div>
+        <div class="card-desc">Enter one feedback entry per line</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="textarea-wrap">
+        <textarea
+          id="feedback-input"
+          placeholder="The biryani was delicious but service was very slow today.
+Waited 45 minutes for our table — completely unacceptable.
+Amazing ambiance and friendly staff, loved the experience!
+Food quality has really gone down this month.
+Great value for money, will definitely return."
+          oninput="updateLineCount()"
+        ></textarea>
+      </div>
+
+      <div class="input-footer">
+        <span class="input-hint">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+            <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1.1"/>
+            <line x1="6.5" y1="5.5" x2="6.5" y2="9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            <circle cx="6.5" cy="4" r="0.6" fill="currentColor"/>
+          </svg>
+          Each line = one feedback entry
+        </span>
+        <span id="line-count">0 entries</span>
+      </div>
+
+      <button id="btn-generate" onclick="generateReport()" style="margin-top:1rem;">
+        <div class="btn-spinner" id="btn-spinner"></div>
+        <span id="btn-label">✦ Generate Report</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ERROR STATE -->
+  <div id="error-state">
+    <span class="error-icon">⚠️</span>
+    <div>
+      <div class="error-title">Something went wrong</div>
+      <div class="error-msg" id="error-msg">Could not connect to the server. Please make sure the backend is running at http://localhost:3000 and try again.</div>
+    </div>
+  </div>
+
+  <!-- LOADING STATE -->
+  <div class="card" id="loading-state">
+    <div class="card-body">
+      <div id="loading-inner" style="text-align:center; padding: 1.5rem 0;">
+        <div class="loading-icon">🧠</div>
+        <div class="loading-title">Analyzing feedback using AI…</div>
+        <div class="loading-sub">Detecting sentiment · Extracting issues · Building insights</div>
+        <div class="loading-bar-bg">
+          <div class="loading-bar-fill"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS AREA -->
+  <div id="results-area">
+
+    <!-- Success banner -->
+    <div class="success-banner" id="success-banner">
+      <span>✅</span>
+      <span id="success-msg">Report generated successfully from 5 feedback entries.</span>
+    </div>
+
+    <!-- 1. SENTIMENT BREAKDOWN -->
+    <div class="card" style="animation-delay:0.05s;">
+      <div class="card-header">
+        <div class="card-header-icon" style="background:var(--green-pale);">📊</div>
+        <div>
+          <div class="card-title">Sentiment Breakdown</div>
+          <div class="card-desc">Emotional tone distribution across all feedback</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="sentiment-grid">
+          <!-- Positive -->
+          <div class="sentiment-card sentiment-card-positive">
+            <div class="sentiment-label">Positive</div>
+            <div class="sentiment-value" id="val-positive">—<span class="sentiment-pct">%</span></div>
+            <div class="sentiment-bar">
+              <div class="sentiment-bar-fill bar-positive" id="bar-positive" style="width:0%"></div>
+            </div>
+          </div>
+          <!-- Negative -->
+          <div class="sentiment-card sentiment-card-negative">
+            <div class="sentiment-label">Negative</div>
+            <div class="sentiment-value" id="val-negative">—<span class="sentiment-pct">%</span></div>
+            <div class="sentiment-bar">
+              <div class="sentiment-bar-fill bar-negative" id="bar-negative" style="width:0%"></div>
+            </div>
+          </div>
+          <!-- Neutral -->
+          <div class="sentiment-card sentiment-card-neutral">
+            <div class="sentiment-label">Neutral</div>
+            <div class="sentiment-value" id="val-neutral">—<span class="sentiment-pct">%</span></div>
+            <div class="sentiment-bar">
+              <div class="sentiment-bar-fill bar-neutral" id="bar-neutral" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Combined bar -->
+        <div class="combined-bar" id="combined-bar">
+          <div class="combined-seg bar-positive" id="seg-positive" style="width:0%"></div>
+          <div class="combined-seg bar-negative" id="seg-negative" style="width:0%"></div>
+          <div class="combined-seg bar-neutral"  id="seg-neutral"  style="width:0%"></div>
+        </div>
+        <div style="display:flex;gap:1rem;margin-top:8px;">
+          <span style="font-size:11px;color:var(--green);font-weight:500;display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--green);display:inline-block;"></span>Positive</span>
+          <span style="font-size:11px;color:var(--red);font-weight:500;display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--red);display:inline-block;"></span>Negative</span>
+          <span style="font-size:11px;color:var(--slate);font-weight:500;display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--slate);display:inline-block;"></span>Neutral</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. TOP ISSUES -->
+    <div class="card" style="animation-delay:0.1s;">
+      <div class="card-header">
+        <div class="card-header-icon" style="background:var(--saffron-pale);">🔥</div>
+        <div>
+          <div class="card-title">Top Issues</div>
+          <div class="card-desc">Most frequently mentioned problems</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="issues-list" id="issues-list">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. INSIGHTS -->
+    <div class="card" style="animation-delay:0.15s;">
+      <div class="card-header">
+        <div class="card-header-icon" style="background:var(--blue-pale);">💡</div>
+        <div>
+          <div class="card-title">Key Insights</div>
+          <div class="card-desc">AI-identified patterns in your feedback</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="bullet-list" id="insights-list">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. RECOMMENDATIONS -->
+    <div class="card" style="animation-delay:0.2s;">
+      <div class="card-header">
+        <div class="card-header-icon" style="background:var(--green-pale);">✅</div>
+        <div>
+          <div class="card-title">Recommendations</div>
+          <div class="card-desc">Actionable next steps based on your data</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="bullet-list" id="recommendations-list">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /results-area -->
+
+</div><!-- /page-wrap -->
+
+<script>
+// ── UPDATE LINE COUNT ──
+function updateLineCount() {
+  const textarea = document.getElementById('feedback-input');
+  const lines = textarea.value
+    .split('\n')
+    .filter(line => line.trim() !== '');
+  const el = document.getElementById('line-count');
+  el.textContent = lines.length + (lines.length === 1 ? ' entry' : ' entries');
+}
+
+// ── SHOW / HIDE SECTIONS ──
+function showSection(id)  { document.getElementById(id).style.display = 'flex'; }
+function hideSection(id)  { document.getElementById(id).style.display = 'none'; }
+function showBlock(id)    { document.getElementById(id).style.display = 'block'; }
+function hideBlock(id)    { document.getElementById(id).style.display = 'none'; }
+
+// ── MAIN GENERATE FUNCTION ──
+async function generateReport() {
+  const textarea  = document.getElementById('feedback-input');
+  const rawText   = textarea.value.trim();
+  const btn       = document.getElementById('btn-generate');
+  const spinner   = document.getElementById('btn-spinner');
+  const btnLabel  = document.getElementById('btn-label');
+
+  // Clear previous results
+  hideSection('error-state');
+  hideBlock('results-area');
+  hideBlock('loading-state');
+
+  // Validate: must have at least one non-empty line
+  if (!rawText) {
+    showError('Please enter at least one feedback entry before generating a report.');
+    return;
+  }
+
+  // Split by newlines, remove blank lines
+  const feedbacks = rawText
+    .split('\n')
+    .map(line => line.trim())
+    .filter(line => line.length > 0);
+
+  if (feedbacks.length === 0) {
+    showError('No valid feedback entries found. Please enter at least one line of feedback.');
+    return;
+  }
+
+  // ── LOADING STATE ON ──
+  btn.disabled   = true;
+  spinner.style.display = 'block';
+  btnLabel.textContent  = 'Generating…';
+  showBlock('loading-state');
+
+  try {
+    // ── API CALL ──
+    const response = await fetch('http://localhost:3000/generate-report', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ feedbacks })
+    });
+
+    if (!response.ok) {
+      // Server returned a non-2xx status
+      let serverMsg = `Server error: ${response.status} ${response.statusText}`;
+      try {
+        const errBody = await response.json();
+        if (errBody.message || errBody.error) {
+          serverMsg = errBody.message || errBody.error;
+        }
+      } catch (_) {}
+      throw new Error(serverMsg);
+    }
+
+    const data = await response.json();
+
+    // ── HIDE LOADING, SHOW RESULTS ──
+    hideBlock('loading-state');
+    displayReport(data, feedbacks.length);
+
+  } catch (err) {
+    hideBlock('loading-state');
+
+    // Friendly error messages
+    let userMsg = err.message;
+    if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+      userMsg = 'Could not reach the server at http://localhost:3000. Make sure your backend is running and try again.';
+    } else if (err.message.includes('CORS')) {
+      userMsg = 'CORS error: The backend needs to allow requests from this page. Check your server CORS settings.';
+    }
+
+    showError(userMsg);
+  } finally {
+    // ── RESET BUTTON ──
+    btn.disabled = false;
+    spinner.style.display = 'none';
+    btnLabel.textContent  = '✦ Generate Report';
+  }
+}
+
+// ── DISPLAY ERROR ──
+function showError(msg) {
+  document.getElementById('error-msg').textContent = msg;
+  const el = document.getElementById('error-state');
+  el.style.display = 'flex';
+}
+
+// ── DISPLAY REPORT ──
+function displayReport(data, feedbackCount) {
+  // ── 1. SENTIMENT ──
+  const pos = parseFloat(data.sentiment?.Positive  || 0);
+  const neg = parseFloat(data.sentiment?.Negative  || 0);
+  const neu = parseFloat(data.sentiment?.Neutral   || 0);
+
+  // Set text values
+  document.getElementById('val-positive').innerHTML = pos.toFixed(1) + '<span class="sentiment-pct">%</span>';
+  document.getElementById('val-negative').innerHTML = neg.toFixed(1) + '<span class="sentiment-pct">%</span>';
+  document.getElementById('val-neutral').innerHTML  = neu.toFixed(1) + '<span class="sentiment-pct">%</span>';
+
+  // Animate bars (requestAnimationFrame trick to trigger CSS transition)
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.getElementById('bar-positive').style.width = pos + '%';
+      document.getElementById('bar-negative').style.width = neg + '%';
+      document.getElementById('bar-neutral').style.width  = neu + '%';
+      document.getElementById('seg-positive').style.width = pos + '%';
+      document.getElementById('seg-negative').style.width = neg + '%';
+      document.getElementById('seg-neutral').style.width  = neu + '%';
+    });
+  });
+
+  // ── 2. TOP ISSUES ──
+  const issuesList = document.getElementById('issues-list');
+  issuesList.innerHTML = '';
+
+  const issues = data.topIssues || [];
+  const maxCount = issues.length > 0 ? Math.max(...issues.map(i => i.count)) : 1;
+
+  if (issues.length === 0) {
+    issuesList.innerHTML = '<div style="font-size:13px;color:var(--slate-2);padding:0.5rem 0;">No specific issues detected.</div>';
+  } else {
+    issues.forEach((item, idx) => {
+      const pct = Math.round((item.count / maxCount) * 100);
+      const row = document.createElement('div');
+      row.className = 'issue-row';
+      row.style.animationDelay = (idx * 0.06) + 's';
+      row.innerHTML = `
+        <div class="issue-rank">#${idx + 1}</div>
+        <div class="issue-name">${escapeHtml(item.issue)}</div>
+        <div class="issue-bar-col">
+          <div class="issue-bar-bg">
+            <div class="issue-bar-fill" style="width:0%" data-target="${pct}"></div>
+          </div>
+        </div>
+        <div class="issue-count">${item.count}</div>
+        <div class="issue-count-label">${item.count === 1 ? 'mention' : 'mentions'}</div>`;
+      issuesList.appendChild(row);
+    });
+
+    // Animate issue bars
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.querySelectorAll('.issue-bar-fill').forEach(bar => {
+          bar.style.width = bar.dataset.target + '%';
+        });
+      });
+    });
+  }
+
+  // ── 3. INSIGHTS ──
+  const insightsList = document.getElementById('insights-list');
+  insightsList.innerHTML = '';
+  const insights = data.insights || [];
+
+  if (insights.length === 0) {
+    insightsList.innerHTML = '<div style="font-size:13px;color:var(--slate-2);">No insights available.</div>';
+  } else {
+    insights.forEach((text, idx) => {
+      const item = document.createElement('div');
+      item.className = 'bullet-item';
+      item.style.animationDelay = (idx * 0.07) + 's';
+      item.innerHTML = `
+        <div class="bullet-dot bullet-dot-insights">💡</div>
+        <span>${escapeHtml(text)}</span>`;
+      insightsList.appendChild(item);
+    });
+  }
+
+  // ── 4. RECOMMENDATIONS ──
+  const recsList = document.getElementById('recommendations-list');
+  recsList.innerHTML = '';
+  const recs = data.recommendations || [];
+
+  if (recs.length === 0) {
+    recsList.innerHTML = '<div style="font-size:13px;color:var(--slate-2);">No recommendations available.</div>';
+  } else {
+    recs.forEach((text, idx) => {
+      const item = document.createElement('div');
+      item.className = 'bullet-item';
+      item.style.animationDelay = (idx * 0.07) + 's';
+      item.innerHTML = `
+        <div class="bullet-dot bullet-dot-recommendations">✅</div>
+        <span>${escapeHtml(text)}</span>`;
+      recsList.appendChild(item);
+    });
+  }
+
+  // ── SUCCESS BANNER ──
+  document.getElementById('success-msg').textContent =
+    `Report generated successfully from ${feedbackCount} feedback ${feedbackCount === 1 ? 'entry' : 'entries'}.`;
+
+  // ── SHOW RESULTS ──
+  showBlock('results-area');
+
+  // Scroll to results smoothly
+  setTimeout(() => {
+    document.getElementById('results-area').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+// ── SAFETY: escape HTML to prevent XSS ──
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ── INIT: update count when page loads ──
+updateLineCount();
+
+// Allow pressing Ctrl+Enter to generate
+document.getElementById('feedback-input').addEventListener('keydown', function(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    generateReport();
+  }
+});
+</script>
+</body>
+</html>
