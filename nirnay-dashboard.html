@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nirnay — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink:       #0D1520;
+  --ink-2:     #1A2740;
+  --ink-3:     #2C3E5A;
+  --saffron:   #E05C1A;
+  --saffron-2: #F2834A;
+  --saffron-pale: #FDF0E8;
+  --amber:     #D4880E;
+  --amber-pale:#FDF6E3;
+  --red:       #C0392B;
+  --red-pale:  #FDECEB;
+  --green:     #0D7A4E;
+  --green-pale:#E3F5EE;
+  --blue:      #2563EB;
+  --blue-pale: #EEF3FF;
+  --slate:     #6B7A99;
+  --slate-2:   #9AA5BE;
+  --mist:      #F5F6FA;
+  --mist-2:    #ECEEF5;
+  --white:     #FFFFFF;
+  --border:    rgba(13,21,32,0.07);
+  --border-2:  rgba(13,21,32,0.12);
+  --sidebar-w: 220px;
+}
+
+html, body { height: 100%; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--mist);
+  color: var(--ink);
+  display: flex;
+  overflow: hidden;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--ink);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  height: 100vh;
+  position: fixed;
+  left: 0; top: 0;
+  z-index: 100;
+  overflow: hidden;
+}
+
+/* subtle mandala texture on sidebar */
+.sidebar::before {
+  content: '';
+  position: absolute;
+  bottom: -60px; right: -60px;
+  width: 240px; height: 240px;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='120' cy='120' r='115' stroke='white' stroke-width='0.6' fill='none'/%3E%3Ccircle cx='120' cy='120' r='85' stroke='white' stroke-width='0.4' fill='none'/%3E%3Ccircle cx='120' cy='120' r='55' stroke='white' stroke-width='0.4' fill='none'/%3E%3Ccircle cx='120' cy='120' r='25' stroke='white' stroke-width='0.5' fill='none'/%3E%3Cg stroke='white' stroke-width='0.4'%3E%3Cline x1='120' y1='5' x2='120' y2='235'/%3E%3Cline x1='5' y1='120' x2='235' y2='120'/%3E%3Cline x1='120' y1='5' x2='120' y2='235' transform='rotate(45 120 120)'/%3E%3Cline x1='120' y1='5' x2='120' y2='235' transform='rotate(22.5 120 120)'/%3E%3Cline x1='120' y1='5' x2='120' y2='235' transform='rotate(67.5 120 120)'/%3E%3Cline x1='120' y1='5' x2='120' y2='235' transform='rotate(112.5 120 120)'/%3E%3Cline x1='120' y1='5' x2='120' y2='235' transform='rotate(135 120 120)'/%3E%3Cline x1='120' y1='5' x2='120' y2='235' transform='rotate(157.5 120 120)'/%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+.sidebar-logo {
+  padding: 1.25rem 1.25rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  margin-bottom: 0.5rem;
+}
+
+.logo-text {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--white);
+}
+.logo-text span { color: var(--saffron-2); }
+
+.sidebar-section-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.28);
+  padding: 0.75rem 1.25rem 0.4rem;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.6rem 1.25rem;
+  margin: 1px 0.5rem;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.5);
+  cursor: pointer;
+  transition: all 0.16s;
+  text-decoration: none;
+  position: relative;
+}
+
+.nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
+
+.nav-item.active {
+  background: rgba(224,92,26,0.18);
+  color: var(--white);
+  font-weight: 500;
+}
+
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 6px; bottom: 6px;
+  width: 3px;
+  background: var(--saffron-2);
+  border-radius: 0 3px 3px 0;
+}
+
+.nav-icon { font-size: 15px; width: 18px; flex-shrink: 0; }
+
+.nav-badge {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 600;
+  background: var(--red);
+  color: white;
+  padding: 2px 7px;
+  border-radius: 20px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.nav-badge-amber {
+  background: var(--amber);
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  padding: 1rem 1.25rem;
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--saffron), var(--amber));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 13px; font-weight: 500; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-role { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+/* ── MAIN ── */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  flex-shrink: 0;
+}
+
+.topbar-left { display: flex; flex-direction: column; gap: 1px; }
+
+.topbar-greeting {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.topbar-date { font-size: 12px; color: var(--slate); }
+
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+
+.topbar-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.16s;
+  border: none;
+}
+
+.topbar-btn-ghost {
+  background: var(--mist);
+  color: var(--ink-2);
+  border: 1px solid var(--border-2);
+}
+.topbar-btn-ghost:hover { background: var(--mist-2); }
+
+.topbar-btn-accent {
+  background: var(--saffron);
+  color: white;
+}
+.topbar-btn-accent:hover { background: #c7511a; transform: translateY(-1px); }
+
+.notif-btn {
+  position: relative;
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  background: var(--mist);
+  border: 1px solid var(--border-2);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.16s;
+}
+.notif-btn:hover { background: var(--mist-2); }
+.notif-dot {
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 7px; height: 7px;
+  background: var(--red);
+  border-radius: 50%;
+  border: 1.5px solid white;
+}
+
+/* ── CONTENT ── */
+.content {
+  padding: 1.5rem 2rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  flex: 1;
+}
+
+/* ── ALERT BANNER ── */
+.alert-banner {
+  background: var(--red-pale);
+  border: 1px solid rgba(192,57,43,0.2);
+  border-radius: 12px;
+  padding: 0.85rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: slide-in 0.4s ease both;
+}
+
+@keyframes slide-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.alert-icon { font-size: 16px; flex-shrink: 0; }
+.alert-text { flex: 1; }
+.alert-title { font-size: 13px; font-weight: 600; color: var(--red); }
+.alert-sub   { font-size: 12px; color: rgba(192,57,43,0.75); margin-top: 1px; }
+.alert-action {
+  font-size: 12px; font-weight: 600;
+  color: var(--red);
+  background: rgba(192,57,43,0.1);
+  border: 1px solid rgba(192,57,43,0.2);
+  border-radius: 6px;
+  padding: 4px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.16s;
+}
+.alert-action:hover { background: rgba(192,57,43,0.18); }
+
+.alert-dismiss { color: rgba(192,57,43,0.5); cursor: pointer; font-size: 18px; line-height: 1; padding: 0 4px; }
+.alert-dismiss:hover { color: var(--red); }
+
+/* ── KPI ROW ── */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.kpi-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.18s, box-shadow 0.18s;
+  animation: fade-up 0.5s ease both;
+}
+.kpi-card:nth-child(1) { animation-delay: 0.05s; }
+.kpi-card:nth-child(2) { animation-delay: 0.1s; }
+.kpi-card:nth-child(3) { animation-delay: 0.15s; }
+.kpi-card:nth-child(4) { animation-delay: 0.2s; }
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.kpi-card:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(13,21,32,0.07); }
+
+.kpi-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 14px 14px 0 0;
+}
+.kpi-green::after  { background: var(--green); }
+.kpi-red::after    { background: var(--red); }
+.kpi-amber::after  { background: var(--amber); }
+.kpi-blue::after   { background: var(--blue); }
+
+.kpi-label { font-size: 11px; font-weight: 500; letter-spacing: 0.5px; color: var(--slate); text-transform: uppercase; }
+
+.kpi-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.kpi-meta { display: flex; align-items: center; gap: 6px; }
+
+.kpi-delta {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 20px;
+}
+.delta-up   { background: var(--green-pale); color: var(--green); }
+.delta-down { background: var(--red-pale);   color: var(--red); }
+.delta-warn { background: var(--amber-pale); color: var(--amber); }
+
+.kpi-meta-text { font-size: 11px; color: var(--slate-2); }
+
+.kpi-sparkline { margin-top: 6px; }
+
+/* ── GRID ROW ── */
+.grid-row {
+  display: grid;
+  gap: 1.25rem;
+}
+.grid-2-1 { grid-template-columns: 2fr 1fr; }
+.grid-1-1 { grid-template-columns: 1fr 1fr; }
+.grid-3   { grid-template-columns: 1fr 1fr 1fr; }
+
+/* ── CARD ── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  animation: fade-up 0.5s ease both;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.card-subtitle { font-size: 12px; color: var(--slate-2); margin-top: 1px; }
+
+.card-action {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--saffron);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.16s;
+}
+.card-action:hover { background: var(--saffron-pale); }
+
+.card-body { padding: 1rem 1.25rem; }
+
+/* ── TREND CHART ── */
+.chart-wrap {
+  position: relative;
+  height: 160px;
+  width: 100%;
+}
+
+.chart-legend {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--slate); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* ── SENTIMENT DONUT ── */
+.donut-wrap {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 0.5rem 0;
+}
+
+.donut-legend { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.donut-legend-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.donut-legend-left { display: flex; align-items: center; gap: 8px; }
+.donut-legend-bar-bg {
+  width: 80px; height: 5px;
+  background: var(--mist-2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.donut-legend-bar { height: 100%; border-radius: 3px; }
+.donut-legend-label { font-size: 12px; color: var(--slate); min-width: 56px; }
+.donut-legend-pct { font-size: 12px; font-weight: 600; color: var(--ink-2); min-width: 32px; text-align: right; }
+.donut-swatch { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+
+/* ── ISSUES LEADERBOARD ── */
+.issue-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.14s;
+  cursor: default;
+}
+.issue-row:last-child { border-bottom: none; }
+.issue-row:hover { background: var(--mist); margin: 0 -1.25rem; padding-left: 1.25rem; padding-right: 1.25rem; border-radius: 6px; }
+
+.issue-rank {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--slate-2);
+  min-width: 18px;
+  text-align: center;
+}
+
+.issue-swatch {
+  width: 8px; height: 28px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.issue-info { flex: 1; min-width: 0; }
+.issue-name { font-size: 13px; font-weight: 500; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.issue-source { font-size: 11px; color: var(--slate-2); margin-top: 1px; }
+
+.issue-count { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.issue-mentions { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--ink); }
+.issue-trend { font-size: 11px; }
+.trend-up   { color: var(--red); }
+.trend-down { color: var(--green); }
+
+.issue-bar-col { width: 70px; }
+.issue-bar-bg { height: 6px; background: var(--mist-2); border-radius: 3px; overflow: hidden; }
+.issue-bar-fill { height: 100%; border-radius: 3px; }
+
+/* ── REPORTS LIST ── */
+.report-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.14s;
+}
+.report-row:last-child { border-bottom: none; }
+.report-row:hover { background: var(--mist); margin: 0 -1.25rem; padding-left: 1.25rem; padding-right: 1.25rem; border-radius: 6px; }
+
+.report-icon {
+  width: 36px; height: 36px;
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.report-info { flex: 1; min-width: 0; }
+.report-name { font-size: 13px; font-weight: 500; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.report-meta { font-size: 11px; color: var(--slate-2); margin-top: 2px; }
+
+.report-status {
+  font-size: 11px; font-weight: 500;
+  padding: 3px 10px; border-radius: 20px;
+  white-space: nowrap;
+}
+.status-ready  { background: var(--green-pale);  color: var(--green); }
+.status-running{ background: var(--blue-pale);   color: var(--blue); }
+.status-review { background: var(--amber-pale);  color: var(--amber); }
+
+/* ── ALERTS LIST ── */
+.alert-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.alert-item:last-child { border-bottom: none; }
+
+.alert-severity {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.sev-high   { background: var(--red); box-shadow: 0 0 0 3px rgba(192,57,43,0.15); }
+.sev-medium { background: var(--amber); }
+.sev-low    { background: var(--blue); }
+
+.alert-item-info { flex: 1; }
+.alert-item-title { font-size: 13px; font-weight: 500; color: var(--ink-2); line-height: 1.3; }
+.alert-item-sub   { font-size: 11px; color: var(--slate-2); margin-top: 2px; }
+
+.alert-item-time { font-size: 11px; color: var(--slate-2); white-space: nowrap; }
+
+/* ── DECISION TREE HISTORY ── */
+.dt-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.14s;
+}
+.dt-row:last-child { border-bottom: none; }
+.dt-row:hover { background: var(--mist); margin: 0 -1.25rem; padding-left: 1.25rem; padding-right: 1.25rem; border-radius: 6px; }
+
+.dt-icon {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  background: var(--saffron-pale);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.dt-info { flex: 1; }
+.dt-name { font-size: 13px; font-weight: 500; color: var(--ink-2); }
+.dt-meta { font-size: 11px; color: var(--slate-2); margin-top: 2px; }
+.dt-ev   { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--saffron); }
+
+/* ── QUICK ACTIONS ── */
+.quick-actions { display: flex; flex-direction: column; gap: 8px; }
+
+.qa-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-2);
+  background: var(--white);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: all 0.16s;
+  text-align: left;
+  width: 100%;
+}
+.qa-btn:hover {
+  background: var(--mist);
+  border-color: var(--saffron-2);
+  color: var(--saffron);
+  transform: translateX(2px);
+}
+.qa-icon { font-size: 16px; width: 20px; }
+.qa-arrow { margin-left: auto; color: var(--slate-2); font-size: 14px; }
+.qa-btn:hover .qa-arrow { color: var(--saffron); }
+
+/* ── MINI TEAM ── */
+.team-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.team-row:last-child { border-bottom: none; }
+
+.team-avatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.team-name { font-size: 13px; font-weight: 500; color: var(--ink-2); flex: 1; }
+.team-role { font-size: 11px; color: var(--slate-2); }
+.team-online { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+.team-offline{ width: 7px; height: 7px; border-radius: 50%; background: var(--mist-2); border: 1px solid var(--border-2); }
+
+/* ── SCROLLBAR ── */
+.main::-webkit-scrollbar { width: 5px; }
+.main::-webkit-scrollbar-track { background: transparent; }
+.main::-webkit-scrollbar-thumb { background: var(--mist-2); border-radius: 10px; }
+</style>
+</head>
+<body>
+
+<!-- ════════════ SIDEBAR ════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+      <circle cx="16" cy="16" r="14" stroke="rgba(255,255,255,0.4)" stroke-width="1.2"/>
+      <circle cx="16" cy="16" r="5" fill="#E05C1A"/>
+      <g stroke="rgba(255,255,255,0.4)" stroke-width="1">
+        <line x1="16" y1="2" x2="16" y2="7"/><line x1="16" y1="25" x2="16" y2="30"/>
+        <line x1="2" y1="16" x2="7" y2="16"/><line x1="25" y1="16" x2="30" y2="16"/>
+      </g>
+    </svg>
+    <span class="logo-text">Nirn<span>ay</span></span>
+  </div>
+
+  <div class="sidebar-section-label">Overview</div>
+  <a class="nav-item active">
+    <span class="nav-icon">⬛</span> Dashboard
+  </a>
+  <a class="nav-item">
+    <span class="nav-icon">🔔</span> Alerts
+    <span class="nav-badge">3</span>
+  </a>
+
+  <div class="sidebar-section-label">Feedback</div>
+  <a class="nav-item">
+    <span class="nav-icon">📤</span> Upload Data
+  </a>
+  <a class="nav-item">
+    <span class="nav-icon">📊</span> Sentiment View
+  </a>
+  <a class="nav-item">
+    <span class="nav-icon">📄</span> AI Reports
+    <span class="nav-badge nav-badge-amber">2</span>
+  </a>
+
+  <div class="sidebar-section-label">Decisions</div>
+  <a class="nav-item">
+    <span class="nav-icon">🌿</span> Decision Trees
+  </a>
+  <a class="nav-item">
+    <span class="nav-icon">📋</span> Action Plans
+  </a>
+
+  <div class="sidebar-section-label">Workspace</div>
+  <a class="nav-item">
+    <span class="nav-icon">👥</span> Team
+  </a>
+  <a class="nav-item">
+    <span class="nav-icon">⚙️</span> Settings
+  </a>
+
+  <div class="sidebar-bottom">
+    <div class="user-card">
+      <div class="user-avatar">RK</div>
+      <div class="user-info">
+        <div class="user-name">Rahul Kapoor</div>
+        <div class="user-role">Founder · Spice Route</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ════════════ MAIN ════════════ -->
+<main class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-greeting">Good morning, Rahul 👋</span>
+      <span class="topbar-date" id="topbar-date">Friday, 27 March 2026</span>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn topbar-btn-ghost">📥 Import Feedback</button>
+      <button class="topbar-btn topbar-btn-accent">+ New Report</button>
+      <div class="notif-btn">🔔<div class="notif-dot"></div></div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ALERT BANNER -->
+    <div class="alert-banner" id="alert-banner">
+      <span class="alert-icon">⚠️</span>
+      <div class="alert-text">
+        <div class="alert-title">Urgent — Spike in negative feedback detected</div>
+        <div class="alert-sub">47 reviews in the last 24 hrs mention "slow service" · Spice Route Connaught Place · Needs attention now</div>
+      </div>
+      <button class="alert-action" onclick="openDecisionTree()">Open Decision Tree →</button>
+      <span class="alert-dismiss" onclick="this.parentElement.style.display='none'">×</span>
+    </div>
+
+    <!-- KPI ROW -->
+    <div class="kpi-row">
+      <div class="kpi-card kpi-green">
+        <div class="kpi-label">Sentiment Score</div>
+        <div class="kpi-val">74<span style="font-size:1rem;color:var(--slate)">%</span></div>
+        <div class="kpi-meta">
+          <span class="kpi-delta delta-up">↑ +6%</span>
+          <span class="kpi-meta-text">vs last week</span>
+        </div>
+        <div class="kpi-sparkline">
+          <svg width="100%" height="28" viewBox="0 0 120 28" preserveAspectRatio="none">
+            <polyline points="0,22 20,18 40,20 60,14 80,10 100,8 120,5" fill="none" stroke="var(--green)" stroke-width="2" stroke-linejoin="round"/>
+            <polyline points="0,22 20,18 40,20 60,14 80,10 100,8 120,5 120,28 0,28" fill="rgba(13,122,78,0.08)" stroke="none"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="kpi-card kpi-red">
+        <div class="kpi-label">Open Alerts</div>
+        <div class="kpi-val">3</div>
+        <div class="kpi-meta">
+          <span class="kpi-delta delta-down">↑ +2</span>
+          <span class="kpi-meta-text">since yesterday</span>
+        </div>
+        <div class="kpi-sparkline">
+          <svg width="100%" height="28" viewBox="0 0 120 28" preserveAspectRatio="none">
+            <polyline points="0,24 20,22 40,24 60,20 80,18 100,22 120,8" fill="none" stroke="var(--red)" stroke-width="2" stroke-linejoin="round"/>
+            <polyline points="0,24 20,22 40,24 60,20 80,18 100,22 120,8 120,28 0,28" fill="rgba(192,57,43,0.07)" stroke="none"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="kpi-card kpi-amber">
+        <div class="kpi-label">Feedback (7 days)</div>
+        <div class="kpi-val">312</div>
+        <div class="kpi-meta">
+          <span class="kpi-delta delta-up">↑ +28</span>
+          <span class="kpi-meta-text">vs prev week</span>
+        </div>
+        <div class="kpi-sparkline">
+          <svg width="100%" height="28" viewBox="0 0 120 28" preserveAspectRatio="none">
+            <polyline points="0,20 20,18 40,16 60,19 80,14 100,12 120,10" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linejoin="round"/>
+            <polyline points="0,20 20,18 40,16 60,19 80,14 100,12 120,10 120,28 0,28" fill="rgba(212,136,14,0.08)" stroke="none"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="kpi-card kpi-blue">
+        <div class="kpi-label">AI Reports Ready</div>
+        <div class="kpi-val">2</div>
+        <div class="kpi-meta">
+          <span class="kpi-delta delta-warn">1 pending</span>
+          <span class="kpi-meta-text">review</span>
+        </div>
+        <div class="kpi-sparkline">
+          <svg width="100%" height="28" viewBox="0 0 120 28" preserveAspectRatio="none">
+            <polyline points="0,24 20,22 40,22 60,18 80,18 100,12 120,10" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linejoin="round"/>
+            <polyline points="0,24 20,22 40,22 60,18 80,18 100,12 120,10 120,28 0,28" fill="rgba(37,99,235,0.07)" stroke="none"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 2: TREND + SENTIMENT + ALERTS -->
+    <div class="grid-row grid-2-1" style="animation-delay:0.2s;">
+
+      <!-- Trend Chart -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Weekly Feedback Trend</div>
+            <div class="card-subtitle">Positive vs Negative · Last 7 days · All locations</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <select style="font-size:12px;border:1px solid var(--border-2);border-radius:6px;padding:4px 8px;color:var(--slate);background:var(--mist);font-family:'DM Sans',sans-serif;outline:none;">
+              <option>This week</option>
+              <option>Last month</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="chart-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Positive</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Negative</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--slate-2)"></div>Neutral</div>
+          </div>
+          <div class="chart-wrap">
+            <svg width="100%" height="160" viewBox="0 0 500 160" preserveAspectRatio="xMidYMid meet">
+              <!-- Grid lines -->
+              <line x1="0" y1="30"  x2="500" y2="30"  stroke="var(--border)" stroke-width="1"/>
+              <line x1="0" y1="70"  x2="500" y2="70"  stroke="var(--border)" stroke-width="1"/>
+              <line x1="0" y1="110" x2="500" y2="110" stroke="var(--border)" stroke-width="1"/>
+              <line x1="0" y1="150" x2="500" y2="150" stroke="var(--border)" stroke-width="1"/>
+
+              <!-- Y labels -->
+              <text x="0" y="28"  font-size="9" fill="var(--slate-2)" font-family="DM Sans">80</text>
+              <text x="0" y="68"  font-size="9" fill="var(--slate-2)" font-family="DM Sans">60</text>
+              <text x="0" y="108" font-size="9" fill="var(--slate-2)" font-family="DM Sans">40</text>
+              <text x="0" y="148" font-size="9" fill="var(--slate-2)" font-family="DM Sans">20</text>
+
+              <!-- X labels -->
+              <text x="36"  y="158" font-size="9" fill="var(--slate-2)" font-family="DM Sans" text-anchor="middle">Mon</text>
+              <text x="108" y="158" font-size="9" fill="var(--slate-2)" font-family="DM Sans" text-anchor="middle">Tue</text>
+              <text x="180" y="158" font-size="9" fill="var(--slate-2)" font-family="DM Sans" text-anchor="middle">Wed</text>
+              <text x="252" y="158" font-size="9" fill="var(--slate-2)" font-family="DM Sans" text-anchor="middle">Thu</text>
+              <text x="324" y="158" font-size="9" fill="var(--slate-2)" font-family="DM Sans" text-anchor="middle">Fri</text>
+              <text x="396" y="158" font-size="9" fill="var(--slate-2)" font-family="DM Sans" text-anchor="middle">Sat</text>
+              <text x="468" y="158" font-size="9" fill="var(--slate-2)" font-family="DM Sans" text-anchor="middle">Sun</text>
+
+              <!-- Positive area -->
+              <defs>
+                <linearGradient id="grad-green" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="var(--green)" stop-opacity="0.15"/>
+                  <stop offset="100%" stop-color="var(--green)" stop-opacity="0"/>
+                </linearGradient>
+                <linearGradient id="grad-red" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="var(--red)" stop-opacity="0.12"/>
+                  <stop offset="100%" stop-color="var(--red)" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+
+              <!-- Positive line: Mon62, Tue58, Wed70, Thu65, Fri72, Sat75, Sun74 -->
+              <!-- y = 150 - (val/80)*120  -->
+              <polygon points="36,57 108,63 180,45 252,52.5 324,42 396,37.5 468,39 468,150 36,150" fill="url(#grad-green)"/>
+              <polyline points="36,57 108,63 180,45 252,52.5 324,42 396,37.5 468,39" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+
+              <!-- Negative line: Mon18, Tue22, Wed15, Thu28, Fri42, Sat35, Sun24 -->
+              <polygon points="36,123 108,117 180,127.5 252,108 324,87 396,97.5 468,114 468,150 36,150" fill="url(#grad-red)"/>
+              <polyline points="36,123 108,117 180,127.5 252,108 324,87 396,97.5 468,114" fill="none" stroke="var(--red)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+
+              <!-- Neutral line -->
+              <polyline points="36,105 108,108 180,102 252,106 324,100 396,98 468,103" fill="none" stroke="var(--slate-2)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="4 3"/>
+
+              <!-- Dots on positive -->
+              <circle cx="36"  cy="57"   r="3.5" fill="var(--green)" stroke="white" stroke-width="1.5"/>
+              <circle cx="108" cy="63"   r="3.5" fill="var(--green)" stroke="white" stroke-width="1.5"/>
+              <circle cx="180" cy="45"   r="3.5" fill="var(--green)" stroke="white" stroke-width="1.5"/>
+              <circle cx="252" cy="52.5" r="3.5" fill="var(--green)" stroke="white" stroke-width="1.5"/>
+              <circle cx="324" cy="42"   r="4.5" fill="var(--green)" stroke="white" stroke-width="2"/>
+              <circle cx="396" cy="37.5" r="3.5" fill="var(--green)" stroke="white" stroke-width="1.5"/>
+              <circle cx="468" cy="39"   r="3.5" fill="var(--green)" stroke="white" stroke-width="1.5"/>
+
+              <!-- Spike dot on negative Fri -->
+              <circle cx="324" cy="87" r="4.5" fill="var(--red)" stroke="white" stroke-width="2"/>
+              <line x1="324" y1="42" x2="324" y2="87" stroke="rgba(192,57,43,0.2)" stroke-width="1" stroke-dasharray="3 2"/>
+              <text x="328" y="82" font-size="9" fill="var(--red)" font-family="DM Sans" font-weight="600">Spike ↑</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alerts -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Urgent Alerts</div>
+            <div class="card-subtitle">Needs your attention</div>
+          </div>
+          <button class="card-action">View all</button>
+        </div>
+        <div class="card-body">
+          <div class="alert-item">
+            <div class="alert-severity sev-high"></div>
+            <div class="alert-item-info">
+              <div class="alert-item-title">Slow service complaints surging</div>
+              <div class="alert-item-sub">47 mentions · CP location · 24 hrs</div>
+            </div>
+            <div class="alert-item-time">2h ago</div>
+          </div>
+          <div class="alert-item">
+            <div class="alert-severity sev-high"></div>
+            <div class="alert-item-info">
+              <div class="alert-item-title">Food quality — biryani portion</div>
+              <div class="alert-item-sub">18 reviews · Hauz Khas · This week</div>
+            </div>
+            <div class="alert-item-time">6h ago</div>
+          </div>
+          <div class="alert-item">
+            <div class="alert-severity sev-medium"></div>
+            <div class="alert-item-info">
+              <div class="alert-item-title">AC not working — 3 complaints</div>
+              <div class="alert-item-sub">Lajpat Nagar location · Today</div>
+            </div>
+            <div class="alert-item-time">1d ago</div>
+          </div>
+          <div class="alert-item">
+            <div class="alert-severity sev-low"></div>
+            <div class="alert-item-info">
+              <div class="alert-item-title">New Google Form responses ready</div>
+              <div class="alert-item-sub">84 new entries awaiting analysis</div>
+            </div>
+            <div class="alert-item-time">2d ago</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 3: LEADERBOARD + SENTIMENT + REPORTS -->
+    <div class="grid-row grid-3" style="animation-delay:0.3s;">
+
+      <!-- Issues Leaderboard -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Top Issues</div>
+            <div class="card-subtitle">By mention volume this week</div>
+          </div>
+          <button class="card-action">Details</button>
+        </div>
+        <div class="card-body">
+          <div class="issue-row">
+            <div class="issue-rank">#1</div>
+            <div class="issue-swatch" style="background:var(--red)"></div>
+            <div class="issue-info">
+              <div class="issue-name">Slow service</div>
+              <div class="issue-source">Google · Zomato</div>
+            </div>
+            <div class="issue-bar-col">
+              <div class="issue-bar-bg"><div class="issue-bar-fill" style="width:90%;background:var(--red)"></div></div>
+            </div>
+            <div class="issue-count">
+              <div class="issue-mentions">64</div>
+              <div class="issue-trend trend-up">↑ 38%</div>
+            </div>
+          </div>
+          <div class="issue-row">
+            <div class="issue-rank">#2</div>
+            <div class="issue-swatch" style="background:var(--amber)"></div>
+            <div class="issue-info">
+              <div class="issue-name">Portion size</div>
+              <div class="issue-source">Swiggy · Direct</div>
+            </div>
+            <div class="issue-bar-col">
+              <div class="issue-bar-bg"><div class="issue-bar-fill" style="width:60%;background:var(--amber)"></div></div>
+            </div>
+            <div class="issue-count">
+              <div class="issue-mentions">42</div>
+              <div class="issue-trend trend-up">↑ 12%</div>
+            </div>
+          </div>
+          <div class="issue-row">
+            <div class="issue-rank">#3</div>
+            <div class="issue-swatch" style="background:var(--blue)"></div>
+            <div class="issue-info">
+              <div class="issue-name">Billing errors</div>
+              <div class="issue-source">Google · Forms</div>
+            </div>
+            <div class="issue-bar-col">
+              <div class="issue-bar-bg"><div class="issue-bar-fill" style="width:40%;background:var(--blue)"></div></div>
+            </div>
+            <div class="issue-count">
+              <div class="issue-mentions">28</div>
+              <div class="issue-trend trend-down">↓ 5%</div>
+            </div>
+          </div>
+          <div class="issue-row">
+            <div class="issue-rank">#4</div>
+            <div class="issue-swatch" style="background:var(--slate-2)"></div>
+            <div class="issue-info">
+              <div class="issue-name">Parking issues</div>
+              <div class="issue-source">Google Maps</div>
+            </div>
+            <div class="issue-bar-col">
+              <div class="issue-bar-bg"><div class="issue-bar-fill" style="width:22%;background:var(--slate-2)"></div></div>
+            </div>
+            <div class="issue-count">
+              <div class="issue-mentions">15</div>
+              <div class="issue-trend trend-down">↓ 2%</div>
+            </div>
+          </div>
+          <div class="issue-row">
+            <div class="issue-rank">#5</div>
+            <div class="issue-swatch" style="background:var(--green)"></div>
+            <div class="issue-info">
+              <div class="issue-name">Staff attitude</div>
+              <div class="issue-source">Zomato · Direct</div>
+            </div>
+            <div class="issue-bar-col">
+              <div class="issue-bar-bg"><div class="issue-bar-fill" style="width:14%;background:var(--green)"></div></div>
+            </div>
+            <div class="issue-count">
+              <div class="issue-mentions">9</div>
+              <div class="issue-trend trend-down">↓ 8%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sentiment Donut -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Sentiment Breakdown</div>
+            <div class="card-subtitle">312 reviews this week</div>
+          </div>
+          <button class="card-action">Full report</button>
+        </div>
+        <div class="card-body">
+          <div class="donut-wrap">
+            <svg width="110" height="110" viewBox="0 0 110 110" style="flex-shrink:0;">
+              <circle cx="55" cy="55" r="42" fill="none" stroke="var(--mist-2)" stroke-width="14"/>
+              <!-- positive: 74% of 264 = 195.5deg -->
+              <circle cx="55" cy="55" r="42" fill="none" stroke="var(--green)" stroke-width="14"
+                stroke-dasharray="193.7 263.9" stroke-dashoffset="66" stroke-linecap="butt"/>
+              <!-- neutral: 16% -->
+              <circle cx="55" cy="55" r="42" fill="none" stroke="var(--blue)" stroke-width="14"
+                stroke-dasharray="42.2 263.9" stroke-dashoffset="-127.7" stroke-linecap="butt"/>
+              <!-- negative: 10% -->
+              <circle cx="55" cy="55" r="42" fill="none" stroke="var(--red)" stroke-width="14"
+                stroke-dasharray="26.4 263.9" stroke-dashoffset="-169.9" stroke-linecap="butt"/>
+              <text x="55" y="50" text-anchor="middle" font-family="Syne,sans-serif" font-size="17" font-weight="700" fill="var(--ink)">74%</text>
+              <text x="55" y="65" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="var(--slate)">positive</text>
+            </svg>
+            <div class="donut-legend">
+              <div class="donut-legend-row">
+                <div class="donut-legend-left">
+                  <div class="donut-swatch" style="background:var(--green)"></div>
+                  <span class="donut-legend-label">Positive</span>
+                </div>
+                <div class="donut-legend-bar-bg"><div class="donut-legend-bar" style="width:74%;background:var(--green)"></div></div>
+                <span class="donut-legend-pct">74%</span>
+              </div>
+              <div class="donut-legend-row">
+                <div class="donut-legend-left">
+                  <div class="donut-swatch" style="background:var(--blue)"></div>
+                  <span class="donut-legend-label">Neutral</span>
+                </div>
+                <div class="donut-legend-bar-bg"><div class="donut-legend-bar" style="width:16%;background:var(--blue)"></div></div>
+                <span class="donut-legend-pct">16%</span>
+              </div>
+              <div class="donut-legend-row">
+                <div class="donut-legend-left">
+                  <div class="donut-swatch" style="background:var(--red)"></div>
+                  <span class="donut-legend-label">Negative</span>
+                </div>
+                <div class="donut-legend-bar-bg"><div class="donut-legend-bar" style="width:10%;background:var(--red)"></div></div>
+                <span class="donut-legend-pct">10%</span>
+              </div>
+              <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+                <div style="font-size:11px;color:var(--slate-2);margin-bottom:6px;">Top positive themes</div>
+                <div style="display:flex;flex-wrap:wrap;gap:5px;">
+                  <span style="font-size:11px;background:var(--green-pale);color:var(--green);padding:2px 8px;border-radius:20px;font-weight:500;">Ambiance ↑</span>
+                  <span style="font-size:11px;background:var(--green-pale);color:var(--green);padding:2px 8px;border-radius:20px;font-weight:500;">Food taste</span>
+                  <span style="font-size:11px;background:var(--green-pale);color:var(--green);padding:2px 8px;border-radius:20px;font-weight:500;">Value</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Reports -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">AI Reports</div>
+            <div class="card-subtitle">Recent & in progress</div>
+          </div>
+          <button class="card-action">+ New</button>
+        </div>
+        <div class="card-body">
+          <div class="report-row">
+            <div class="report-icon" style="background:var(--green-pale)">📊</div>
+            <div class="report-info">
+              <div class="report-name">Weekly Sentiment Summary</div>
+              <div class="report-meta">312 reviews · All locations · 27 Mar</div>
+            </div>
+            <span class="report-status status-ready">Ready</span>
+          </div>
+          <div class="report-row">
+            <div class="report-icon" style="background:var(--amber-pale)">⚡</div>
+            <div class="report-info">
+              <div class="report-name">Service Speed Deep Dive</div>
+              <div class="report-meta">64 mentions · Connaught Place</div>
+            </div>
+            <span class="report-status status-review">Review</span>
+          </div>
+          <div class="report-row">
+            <div class="report-icon" style="background:var(--blue-pale)">🔄</div>
+            <div class="report-info">
+              <div class="report-name">March Full Analysis</div>
+              <div class="report-meta">Processing 847 responses…</div>
+            </div>
+            <span class="report-status status-running">Running</span>
+          </div>
+          <div class="report-row" style="opacity:0.55;">
+            <div class="report-icon" style="background:var(--mist-2)">📄</div>
+            <div class="report-info">
+              <div class="report-name">Feb Quarterly Report</div>
+              <div class="report-meta">Completed · 28 Feb 2026</div>
+            </div>
+            <span class="report-status" style="background:var(--mist-2);color:var(--slate)">Archive</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 4: DECISION TREE HISTORY + QUICK ACTIONS + TEAM -->
+    <div class="grid-row" style="grid-template-columns:1.6fr 1fr 1fr;animation-delay:0.4s;">
+
+      <!-- Decision Tree History -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Decision Tree History</div>
+            <div class="card-subtitle">Your recent strategic decisions</div>
+          </div>
+          <button class="card-action">New tree →</button>
+        </div>
+        <div class="card-body">
+          <div class="dt-row">
+            <div class="dt-icon">🌿</div>
+            <div class="dt-info">
+              <div class="dt-name">Service Speed — CP Location</div>
+              <div class="dt-meta">Created today · 5 nodes · Optimal: Hire 2 servers</div>
+            </div>
+            <div class="dt-ev">EV: ₹2.4L</div>
+          </div>
+          <div class="dt-row">
+            <div class="dt-icon">🌿</div>
+            <div class="dt-info">
+              <div class="dt-name">Menu Pricing Strategy — Q1</div>
+              <div class="dt-meta">24 Mar · 8 nodes · Optimal: Tiered pricing</div>
+            </div>
+            <div class="dt-ev">EV: ₹1.8L</div>
+          </div>
+          <div class="dt-row">
+            <div class="dt-icon">🌿</div>
+            <div class="dt-info">
+              <div class="dt-name">New Location Feasibility</div>
+              <div class="dt-meta">18 Mar · 12 nodes · Optimal: Delay 6 months</div>
+            </div>
+            <div class="dt-ev">EV: ₹4.2L</div>
+          </div>
+          <div class="dt-row" style="opacity:0.6;">
+            <div class="dt-icon" style="background:var(--mist-2);">🌿</div>
+            <div class="dt-info">
+              <div class="dt-name">Staff Training Investment</div>
+              <div class="dt-meta">5 Mar · 6 nodes · Completed</div>
+            </div>
+            <div class="dt-ev" style="color:var(--slate)">Done</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Quick Actions</div>
+        </div>
+        <div class="card-body">
+          <div class="quick-actions">
+            <button class="qa-btn">
+              <span class="qa-icon">📤</span>
+              Upload new feedback
+              <span class="qa-arrow">›</span>
+            </button>
+            <button class="qa-btn">
+              <span class="qa-icon">🌿</span>
+              Start a decision tree
+              <span class="qa-arrow">›</span>
+            </button>
+            <button class="qa-btn">
+              <span class="qa-icon">📊</span>
+              Generate AI report
+              <span class="qa-arrow">›</span>
+            </button>
+            <button class="qa-btn">
+              <span class="qa-icon">📋</span>
+              Create action plan
+              <span class="qa-arrow">›</span>
+            </button>
+            <button class="qa-btn">
+              <span class="qa-icon">👥</span>
+              Invite team member
+              <span class="qa-arrow">›</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Team -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Team</div>
+            <div class="card-subtitle">Spice Route · 5 members</div>
+          </div>
+          <button class="card-action">Manage</button>
+        </div>
+        <div class="card-body">
+          <div class="team-row">
+            <div class="team-avatar" style="background:linear-gradient(135deg,#E05C1A,#D4880E)">RK</div>
+            <div>
+              <div class="team-name">Rahul Kapoor</div>
+              <div class="team-role">Founder</div>
+            </div>
+            <div class="team-online" title="Online"></div>
+          </div>
+          <div class="team-row">
+            <div class="team-avatar" style="background:linear-gradient(135deg,#2563EB,#0D7A4E)">PS</div>
+            <div>
+              <div class="team-name">Priya Sharma</div>
+              <div class="team-role">Operations Lead</div>
+            </div>
+            <div class="team-online"></div>
+          </div>
+          <div class="team-row">
+            <div class="team-avatar" style="background:linear-gradient(135deg,#6B7A99,#1A2740)">AM</div>
+            <div>
+              <div class="team-name">Arjun Mehta</div>
+              <div class="team-role">Marketing</div>
+            </div>
+            <div class="team-offline"></div>
+          </div>
+          <div class="team-row">
+            <div class="team-avatar" style="background:linear-gradient(135deg,#0D7A4E,#2563EB)">SK</div>
+            <div>
+              <div class="team-name">Sneha Kumar</div>
+              <div class="team-role">Floor Manager</div>
+            </div>
+            <div class="team-online"></div>
+          </div>
+          <div class="team-row">
+            <div class="team-avatar" style="background:linear-gradient(135deg,#C0392B,#D4880E)">VR</div>
+            <div>
+              <div class="team-name">Vikram Rao</div>
+              <div class="team-role">Head Chef</div>
+            </div>
+            <div class="team-offline"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<script>
+function openDecisionTree() {
+  alert('Opening Decision Tree: Service Speed Analysis — Connaught Place\n\nThis would navigate to the Decision Tree page with the pre-loaded "Slow Service" scenario.');
+}
+</script>
+</body>
+</html>
